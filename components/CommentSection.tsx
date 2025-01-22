@@ -14,7 +14,7 @@ interface CommentSectionProps {
   initialComments: Comment[]
 }
 
-export default function CommentSection({ postId, initialComments }: CommentSectionProps) {
+export default function CommentSection({ initialComments }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [newComment, setNewComment] = useState('')
   const [author, setAuthor] = useState('')

@@ -3,16 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import posts from '../../content/posts.json'
 
 export default function AdminPanel() {
   const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  const { data: session, status } = useSession({
+  const { status } = useSession({
     required: true,
     onUnauthenticated() {
       setIsLoading(true)
@@ -50,12 +48,11 @@ export default function AdminPanel() {
         })
 
         if (response.ok) {
-          var result = await response.json();
+          const result = await response.json();
 
           console.log(result.message)
           
           setTitle('')
-          setContent('')
           setTags('')
 
           router.push('/blog')

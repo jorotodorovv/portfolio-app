@@ -10,11 +10,7 @@ import SocialShare from '@/components/SocialShare'
 
 import posts from '../../../content/posts.json'
 
-export async function generateStaticParams() {
-  return posts.map((post) => ({
-    id: post.id,
-  }))
-}
+import { Suspense } from 'react';
 
 export default async function BlogPost({ params }: { params: { id: string } }) {
   const post = posts.find(p => p.id === params.id)
@@ -24,7 +20,7 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
   }
 
   const contentPath = path.join(process.cwd(), post.content)
-  let postContent = fs.readFileSync(contentPath, 'utf-8') // Read and cache the markdown file
+  const postContent = fs.readFileSync(contentPath, 'utf-8') // Read and cache the markdown file
 
   // In a real application, you would fetch comments from a database
   const initialComments = [
@@ -33,42 +29,44 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
   ]
 
   return (
-    <article className="prose prose-invert mx-auto">
-      <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-      <div className="flex justify-between items-center text-sm text-gray-500 mb-8">
-        <span>{formatDistanceToNow(new Date(post.date), { addSuffix: true })}</span>
-        <span>{post.readTime} min read</span>
-      </div>
-      <Markdown
-        components={{
-          code({ node, inline, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '')
-            return !inline && match ? (
-              <CodeSnippet
-                code={String(children).replace(/\n$/, '')}
-                language={match[1]}
-              />
-            ) : (
-              <code className={className} {...props}>
-                {children}
-              </code>
-            )
-          }
-        }}
-      >
-        {postContent}
-      </Markdown>
+    <Suspense fallback={<div>Loading...</div>}>
+      <article className="prose prose-invert mx-auto">
+        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+        <div className="flex justify-between items-center text-sm text-gray-500 mb-8">
+          <span>{formatDistanceToNow(new Date(post.date), { addSuffix: true })}</span>
+          <span>{post.readTime} min read</span>
+        </div>
+        <Markdown
+          components={{
+            code({ className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || '')
+              return match ? (
+                <CodeSnippet
+                  code={String(children).replace(/\n$/, '')}
+                  language={match[1]}
+                />
+              ) : (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              )
+            }
+          }}
+        >
+          {postContent}
+        </Markdown>
 
-      <div className="mt-8">
-        {post.tags.map((tag) => (
-          <span key={tag} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
-            {tag}
-          </span>
-        ))}
-      </div>
-      <SocialShare url={`https://yourdomain.com/blog/${post.id}`} title={post.title} />
-      <CommentSection postId={post.id} initialComments={initialComments} />
-    </article>
+        <div className="mt-8">
+          {post.tags.map((tag) => (
+            <span key={tag} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <SocialShare url={`https://yourdomain.com/blog/${post.id}`} title={post.title} />
+        <CommentSection postId={post.id} initialComments={initialComments} />
+      </article>
+    </Suspense>
   )
 }
 
