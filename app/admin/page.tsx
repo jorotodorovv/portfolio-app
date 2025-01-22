@@ -34,34 +34,28 @@ export default function AdminPanel() {
     const file = fileInput?.files?.[0]
 
     if (file) {
-      const reader = new FileReader();
+      const formData = new FormData()
+      formData.append('content', file)
+      formData.append('title', title)
+      formData.append('tags', tags)
 
-      reader.onload = async (event) => {
-        const content = event.target?.result as string;
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        body: formData,
+      })
 
-        const response = await fetch('/api/posts', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ title, content, tags, fileName: file.name }),
-        })
+      if (response.ok) {
+        const result = await response.json()
+        console.log(result.message)
 
-        if (response.ok) {
-          const result = await response.json();
+        setTitle('')
+        setTags('')
+        fileInput.value = ''
 
-          console.log(result.message)
-          
-          setTitle('')
-          setTags('')
-
-          router.push('/blog')
-        } else {
-          console.error('Failed to create post')
-        }
+        router.push('/blog')
+      } else {
+        console.error('Failed to create post')
       }
-
-      reader.readAsText(file)
     }
   }
 

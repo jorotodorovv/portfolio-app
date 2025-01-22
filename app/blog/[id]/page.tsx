@@ -1,26 +1,33 @@
 import { notFound } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
 import Markdown from 'react-markdown'
-import fs from 'fs'
-import path from 'path'
 
 import CodeSnippet from '@/components/CodeSnippet'
 import CommentSection from '@/components/CommentSection'
 import SocialShare from '@/components/SocialShare'
 
-import posts from '../../../content/posts.json'
-
 import { Suspense } from 'react';
+import { Post } from '@/components/BlogList'
+
+async function fetchPost(id: string) {
+  const baseUrl = `http://localhost:3000`;
+  const response = await fetch(`${baseUrl}/api/posts/${id}`);
+
+  if (!response.ok) {
+      throw new Error('Failed to fetch post');
+  }
+
+  const post: Post = await response.json();
+
+  return post;
+}
 
 export default async function BlogPost({ params }: { params: { id: string } }) {
-  const post = posts.find(p => p.id === params.id)
+  const post: Post = await fetchPost(params.id);
 
   if (!post) {
     notFound()
   }
-
-  const contentPath = path.join(process.cwd(), post.content)
-  const postContent = fs.readFileSync(contentPath, 'utf-8') // Read and cache the markdown file
 
   // In a real application, you would fetch comments from a database
   const initialComments = [
@@ -53,17 +60,17 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
             }
           }}
         >
-          {postContent}
+          {post.content}
         </Markdown>
 
         <div className="mt-8">
           {post.tags.map((tag) => (
-            <span key={tag} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
-              {tag}
+            <span key={tag.id} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
+              {tag.name}
             </span>
           ))}
         </div>
-        <SocialShare url={`https://yourdomain.com/blog/${post.id}`} title={post.title} />
+        <SocialShare url={`https://localhost:3000/blog/${post.id}`} title={post.title} />
         <CommentSection postId={post.id} initialComments={initialComments} />
       </article>
     </Suspense>

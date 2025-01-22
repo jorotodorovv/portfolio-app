@@ -1,0 +1,25 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+   url      = env("DATABASE_URL")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  excerpt   String
+  content   String
+  date      DateTime @default(now())
+  readTime  Int
+  tags      Tag[]    @relation("PostTags")
+}
+
+model Tag {
+  id    String   @id @default(cuid())
+  name  String   @unique
+  posts Post[]   @relation("PostTags")
+}

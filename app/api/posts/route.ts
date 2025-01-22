@@ -1,68 +1,61 @@
 import { NextResponse } from 'next/server'
-import { writeFile, readFile } from 'fs/promises'
-import path from 'path'
+import { PrismaClient } from '@prisma/client'
 
-interface Post {
-    id: string;
-    title: string;
-    excerpt: string;
-    content: string;
-    date: string;
-    readTime: number;
-    tags: string[];
-}
+const prisma = new PrismaClient()
 
-interface PostRequest {
+export interface PostRequest {
     title: string;
-    content: string;
+    content: File;
     tags: string;
-    fileName: string;
 }
 
-const postsFilePath = path.join(process.cwd(), 'content/posts.json')
+export async function GET(request: Request) {
+    const posts = await prisma.post.findMany({
+        include: {
+            tags: true,
+        },
+    });
 
-// Function to read posts from the JSON file
-async function readPosts() {
-    const data = await readFile(postsFilePath, 'utf-8')
-    return JSON.parse(data)
-}
-
-// Function to write posts to the JSON file
-async function writePosts(posts: Post[]) {
-    await writeFile(postsFilePath, JSON.stringify(posts, null, 2))
+    return NextResponse.json({ posts });
 }
 
 export async function POST(request: Request) {
-    const { title, content, tags, fileName } : PostRequest = await request.json();
+    const formData = await request.formData();
 
-    const filePath = path.join(process.cwd(), 'content', fileName)
+    const title = formData.get('title') as string;
+    const tags = formData.get('tags') as string;
+    const content = formData.get('content') as File;
 
-    const readTime = Math.ceil(content.split(' ').length / 200)
-    const excerpt = content.substring(0, 100);
-
-    // Write the content to the Markdown file
-    await writeFile(filePath, content)
-
-    // Read existing posts from the JSON file
-    const posts = await readPosts()
-
-    // Create a new post object
-    const newPost = {
-        id: (posts.length + 1).toString(),
-        title,
-        excerpt, // Example excerpt from content
-        content: `content/${fileName}`,
-        date: new Date().toISOString().split('T')[0],
-        readTime,
-        tags: tags.split(',').map(tag => tag.trim())
+    if (!content) {
+        return NextResponse.json({ message: 'No content file provided' }, { status: 400 });
     }
 
-    // Add the new post to the posts array
-    posts.push(newPost)
 
-    // Write the updated posts back to the JSON file
-    await writePosts(posts)
+    const fileContent = await new Promise<string>(async (resolve, reject) => {
+        const fileBuffer = Buffer.from(await content.arrayBuffer());
+        const fileText = fileBuffer.toString('utf-8');
 
-    // Return a success response
-    return NextResponse.json({ message: 'Post created successfully', post: newPost })
+        resolve(fileText);
+    });
+
+    const readTime = Math.ceil(fileContent.split(' ').length / 200);
+    const excerpt = fileContent.substring(0, 100);
+
+    // Create a new post object in the database
+    const newPost = await prisma.post.create({
+        data: {
+            title,
+            excerpt,
+            content: fileContent,
+            readTime,
+            tags: {
+                connectOrCreate: tags.split(',').map(tag => ({
+                    where: { name: tag.trim() },
+                    create: { name: tag.trim() }
+                }))
+            }
+        }
+    });
+
+    return NextResponse.json({ message: 'Post created successfully', post: newPost });
 }

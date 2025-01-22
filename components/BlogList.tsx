@@ -1,17 +1,37 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
+
 import BlogPost from '@/components/BlogPost'
-import posts from '../content/posts.json'
 
 const POSTS_PER_PAGE = 3
 
-export default function BlogList() {
-    const searchParams = useSearchParams()
-    const pageParam = searchParams.get('page')
-    const searchParam = searchParams.get('search')
-    const tagParam = searchParams.get('tag')
+export interface Tag {
+    id: string;
+    name: string;
+}
+
+export interface Post {
+    id: string;
+    title: string;
+    excerpt: string;
+    content: string;
+    date: Date;
+    readTime: number;
+    tags: Tag[];
+}
+
+export interface BlogListProps {
+    posts: Post[];
+}
+
+export default function BlogList({ posts }: BlogListProps) {
+    const searchParams : ReadonlyURLSearchParams | null = useSearchParams();
+
+    const pageParam = searchParams?.get('page')
+    const searchParam = searchParams?.get('search')
+    const tagParam = searchParams?.get('tag')
 
     const [search, setSearch] = useState(searchParam || '')
     const [currentPage, setCurrentPage] = useState(parseInt(pageParam || '1', 10))
@@ -21,7 +41,7 @@ export default function BlogList() {
         const matchesSearch = post.title.toLowerCase().includes(search.toLowerCase()) ||
             post.excerpt.toLowerCase().includes(search.toLowerCase())
 
-        const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true
+        const matchesTag = selectedTag ? post.tags.some(t => t.name === selectedTag) : true
 
         return matchesSearch && matchesTag
     })
@@ -32,15 +52,15 @@ export default function BlogList() {
         currentPage * POSTS_PER_PAGE
     )
 
-    const allTags = Array.from(new Set(posts.flatMap(post => post.tags)))
+    const allTags : Tag[] = Array.from(new Set(posts.flatMap(post => post.tags)))
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setCurrentPage(1)
     }
 
-    const handleTagClick = (tag: string) => {
-        setSelectedTag(tag === selectedTag ? '' : tag)
+    const handleTagClick = (tag: Tag) => {
+        setSelectedTag(tag.name === selectedTag ? '' : tag.name)
         setCurrentPage(1)
     }
 
@@ -61,12 +81,13 @@ export default function BlogList() {
             <div className="mb-8">
                 {allTags.map((tag) => (
                     <button
-                        key={tag}
+                        key={tag.id}
                         onClick={() => handleTagClick(tag)}
-                        className={`inline-block px-3 py-1 mr-2 mb-2 text-sm font-semibold rounded-full ${selectedTag === tag ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-200'
+                        className={`inline-block px-3 py-1 mr-2 mb-2 text-sm font-semibold rounded-full 
+                            ${selectedTag === tag.name ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-200'
                             }`}
                     >
-                        {tag}
+                        {tag.name}
                     </button>
                 ))}
             </div>
@@ -95,4 +116,3 @@ export default function BlogList() {
         </div>
     )
 }
-

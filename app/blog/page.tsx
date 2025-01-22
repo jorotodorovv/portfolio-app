@@ -1,12 +1,23 @@
-'use client'
-
-import BlogList from "@/components/BlogList"
+import BlogList, { Post, BlogListProps } from "@/components/BlogList"
+import Loader from "@/components/Loader";
 import { Suspense } from "react"
 
-export default function Blog() {
+async function fetchPosts() {
+  const baseUrl = `http://localhost:3000`;
+  const response = await fetch(`${baseUrl}/api/posts`);
+  if (!response.ok) {
+      throw new Error('Failed to fetch posts');
+  }
+  const result = await response.json();
+  return result.posts;
+}
+
+export default async function Blog() {
+  const posts: Post[] = await fetchPosts();
+
   return (
-    <Suspense>
-      <BlogList />
+    <Suspense fallback={<Loader />}>
+      <BlogList posts={posts} />
     </Suspense>
   )
 }
