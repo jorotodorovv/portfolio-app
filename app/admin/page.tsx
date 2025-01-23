@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
 export default function AdminPanel() {
-  const [title, setTitle] = useState('')
-  const [tags, setTags] = useState('')
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -36,26 +34,74 @@ export default function AdminPanel() {
     if (file) {
       const formData = new FormData()
       formData.append('content', file)
-      formData.append('title', title)
-      formData.append('tags', tags)
 
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        body: formData,
-      })
+      const title = file.name.replace('.md', '').replace(/[_-]+/g, ' ').replace(/[^\w\s]/g, '');
 
-      if (response.ok) {
-        const result = await response.json()
-        console.log(result.message)
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const content = event.target?.result as string
+        
+        const description = await generateDescriptionWithAI(content);
+        const tags = await generateTagsWithAI(content);
 
-        setTitle('')
-        setTags('')
-        fileInput.value = ''
+        formData.append('title', title)
+        formData.append('description', description)
+        formData.append('tags', tags.join(', '))
 
-        router.push('/blog')
-      } else {
-        console.error('Failed to create post')
+        const response = await fetch('/api/posts', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          console.log(result.message)
+
+          fileInput.value = ''
+          router.push('/blog')
+        } else {
+          console.error('Failed to create post')
+        }
       }
+      reader.readAsText(file)
+    }
+  }
+
+  const generateTagsWithAI = async (content: string) => {
+    const response = await fetch('/api/generate/tags', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      return data.tags;
+    } else {
+      console.error('Failed to generate tags with AI');
+      return [];
+    }
+  }
+
+  const generateDescriptionWithAI = async (content: string) => {
+    const response = await fetch('/api/generate/description', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      return data.tags;
+    } else {
+      console.error('Failed to generate description with AI');
+      return [];
     }
   }
 
@@ -64,33 +110,13 @@ export default function AdminPanel() {
       <h1 className="text-4xl font-bold mb-8">Create New Blog Post</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="title" className="block mb-2">Title</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="w-full p-2 bg-gray-800 rounded"
-          />
-        </div>
-        <div>
-          <label htmlFor="tags" className="block mb-2">Tags (comma-separated)</label>
-          <input
-            type="text"
-            id="tags"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            className="w-full p-2 bg-gray-800 rounded"
-          />
-        </div>
-        <div>
           <label htmlFor="fileInput" className="block mb-2">Upload Markdown File</label>
           <input
             type="file"
             id="fileInput"
             accept=".md"
             className="w-full p-2 bg-gray-800 rounded"
+            required
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">

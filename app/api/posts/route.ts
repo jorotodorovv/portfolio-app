@@ -9,7 +9,7 @@ export interface PostRequest {
     tags: string;
 }
 
-export async function GET(request: Request) {
+export async function GET() {
     const posts = await prisma.post.findMany({
         include: {
             tags: true,
@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
     const title = formData.get('title') as string;
     const tags = formData.get('tags') as string;
+    const description = formData.get('description') as string;
     const content = formData.get('content') as File;
 
     if (!content) {
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
     }
 
 
-    const fileContent = await new Promise<string>(async (resolve, reject) => {
+    const fileContent = await new Promise<string>(async (resolve) => {
         const fileBuffer = Buffer.from(await content.arrayBuffer());
         const fileText = fileBuffer.toString('utf-8');
 
@@ -39,13 +40,11 @@ export async function POST(request: Request) {
     });
 
     const readTime = Math.ceil(fileContent.split(' ').length / 200);
-    const excerpt = fileContent.substring(0, 100);
 
-    // Create a new post object in the database
     const newPost = await prisma.post.create({
         data: {
             title,
-            excerpt,
+            excerpt: description,
             content: fileContent,
             readTime,
             tags: {
