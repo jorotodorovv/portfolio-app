@@ -1,8 +1,3 @@
-interface LoaderProps {
-    status: string;
-    isLoading: boolean;
-}
-
 export default function Loader() {
     return (
         <div className="flex justify-center items-center">

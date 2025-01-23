@@ -8,13 +8,14 @@ import SocialShare from '@/components/SocialShare'
 
 import { Suspense } from 'react';
 import { Post } from '@/components/BlogList'
+import Loader from '@/components/Loader'
 
 async function fetchPost(id: string) {
   const baseUrl = `http://localhost:3000`;
-  const response = await fetch(`${baseUrl}/api/posts/${id}`);
+  const response = await fetch(`${baseUrl}/api/posts/${id}?includeComments=true`);
 
   if (!response.ok) {
-      throw new Error('Failed to fetch post');
+    throw new Error('Failed to fetch post');
   }
 
   const post: Post = await response.json();
@@ -26,17 +27,11 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
   const post: Post = await fetchPost(params.id);
 
   if (!post) {
-    notFound()
+    notFound();
   }
 
-  // In a real application, you would fetch comments from a database
-  const initialComments = [
-    { id: '1', author: 'John Doe', content: 'Great article!', createdAt: '2023-07-10T12:00:00Z' },
-    { id: '2', author: 'Jane Smith', content: 'Thanks for sharing this information.', createdAt: '2023-07-11T09:30:00Z' },
-  ]
-
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loader />}>
       <article className="prose prose-invert mx-auto">
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         <div className="flex justify-between items-center text-sm text-gray-500 mb-8">
@@ -71,7 +66,7 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
           ))}
         </div>
         <SocialShare url={`https://localhost:3000/blog/${post.id}`} title={post.title} />
-        <CommentSection postId={post.id} initialComments={initialComments} />
+        <CommentSection postId={post.id} initialComments={post.comments}/>
       </article>
     </Suspense>
   )

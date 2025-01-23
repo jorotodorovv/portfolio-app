@@ -16,10 +16,20 @@ model Post {
   date      DateTime @default(now())
   readTime  Int
   tags      Tag[]    @relation("PostTags")
+  comments  Comment[] @relation("PostComments")
 }
 
 model Tag {
   id    String   @id @default(cuid())
   name  String   @unique
   posts Post[]   @relation("PostTags")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  author    String
+  content   String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], name: "PostComments")
+  postId    String
 }

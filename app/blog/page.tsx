@@ -1,4 +1,4 @@
-import BlogList, { Post, BlogListProps } from "@/components/BlogList"
+import BlogList, { Post } from "@/components/BlogList"
 import Loader from "@/components/Loader";
 import { Suspense } from "react"
 

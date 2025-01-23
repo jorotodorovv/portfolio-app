@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 
 import BlogPost from '@/components/BlogPost'
+import { Comment } from './CommentSection'
 
 const POSTS_PER_PAGE = 3
 
@@ -20,6 +21,7 @@ export interface Post {
     date: Date;
     readTime: number;
     tags: Tag[];
+    comments: Comment[];
 }
 
 export interface BlogListProps {
@@ -52,7 +54,9 @@ export default function BlogList({ posts }: BlogListProps) {
         currentPage * POSTS_PER_PAGE
     )
 
-    const allTags : Tag[] = Array.from(new Set(posts.flatMap(post => post.tags)))
+    const allTags: Tag[] = Array.from(
+        new Map(posts.flatMap(post => post.tags.map(tag => [tag.id, tag]))).values()
+    );
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
