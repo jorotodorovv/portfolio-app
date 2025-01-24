@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Loader from '@/components/Loader'
 
 export default function AdminPanel() {
   const router = useRouter()
@@ -19,11 +20,7 @@ export default function AdminPanel() {
   })
 
   if (status === "loading" || isLoading) {
-    return (
-      <div className="flex justify-center items-center">
-        <div className="animate-spin h-12 w-12 border-4 border-t-4 border-transparent rounded-full bg-gradient-to-r from-blue-700 to-blue-900"></div>
-      </div>
-    )
+    return <Loader />
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +37,7 @@ export default function AdminPanel() {
       const reader = new FileReader()
       reader.onload = async (event) => {
         const content = event.target?.result as string
-        
+
         const description = await generateDescriptionWithAI(content);
         const tags = await generateTagsWithAI(content);
 

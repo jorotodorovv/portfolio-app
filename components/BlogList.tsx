@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 
 import BlogPost from '@/components/BlogPost'
 import { Comment } from './CommentSection'
 
-const POSTS_PER_PAGE = 3
+const POSTS_PER_PAGE = 10
 
 export interface Tag {
     id: string;
@@ -49,10 +50,12 @@ export default function BlogList({ posts }: BlogListProps) {
     })
 
     const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
-    const displayedPosts = filteredPosts.slice(
-        (currentPage - 1) * POSTS_PER_PAGE,
-        currentPage * POSTS_PER_PAGE
-    )
+    const displayedPosts = filteredPosts
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(
+            (currentPage - 1) * POSTS_PER_PAGE,
+            currentPage * POSTS_PER_PAGE
+        )
 
     const allTags: Tag[] = Array.from(
         new Map(posts.flatMap(post => post.tags.map(tag => [tag.id, tag]))).values()
