@@ -29,6 +29,10 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     loadLocale(lang);
   }, []);
 
+  useEffect(() => {
+    getComments(postId);
+  }, [postId]);
+
   const loadLocale = async (lang: string) => {
     try {
       const localeModule = await import(`date-fns/locale`)
@@ -39,8 +43,8 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     }
   }
 
-  const getComments = async (postId: string) => {
-    const response = await fetch(`/api/comments/${postId}`, {
+  const getComments = async (id: string) => {
+    const response = await fetch(`/api/comments/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -54,8 +58,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       console.error('Failed to get comments');
     }
   }
-
-  getComments(postId);
 
   const submitComment = async (comment: Comment) => {
     const response = await fetch('/api/comments', {

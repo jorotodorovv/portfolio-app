@@ -12,7 +12,10 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
 
   return (
     <Suspense fallback={<Loader />}>
-      <BlogPage currentView={BlogView.CONTENT} session={session} postId={params.id} />
+      <BlogPage 
+      currentView={BlogView.CONTENT} 
+      session={session} 
+      postId={params.id} />
     </Suspense>
   )
 }

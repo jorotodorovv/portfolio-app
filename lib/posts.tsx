@@ -1,8 +1,8 @@
 import { Post } from "@/components/BlogList";
 
-export async function fetchPosts() {
+export async function fetchPosts(url : string) {
     const baseUrl = `http://localhost:3000`;
-    const response = await fetch(`${baseUrl}/api/posts`);
+    const response = await fetch(`${baseUrl}/${url}`);
     if (!response.ok) {
         throw new Error('Failed to fetch posts');
     }

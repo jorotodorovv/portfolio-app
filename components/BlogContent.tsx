@@ -11,7 +11,7 @@ import { deletePost } from '@/lib/posts';
 interface BlogContentProps {
   post: Post;
   userId: string;
-  onDelete: () => void;
+  onDelete: (postId : string) => void;
 }
 
 const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
@@ -49,7 +49,7 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
         ))}
       </div>
       {"cm69ycgqw00009wjyw2stiqao" === userId && (
-        <button onClick={onDelete} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+        <button onClick={() => onDelete(post.id)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
           Delete Post
         </button>
       )}

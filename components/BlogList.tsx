@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { FaTrash } from 'react-icons/fa'
 
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 
@@ -27,9 +28,11 @@ export interface Post {
 
 export interface BlogListProps {
     posts: Post[];
+    onDelete: (postId: string) => void;
+    userId: string;
 }
 
-export default function BlogList({ posts }: BlogListProps) {
+export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
     const searchParams : ReadonlyURLSearchParams | null = useSearchParams();
 
     const pageParam = searchParams?.get('page')
@@ -100,7 +103,19 @@ export default function BlogList({ posts }: BlogListProps) {
             </div>
 
             {displayedPosts.map((post) => (
-                <BlogPost key={post.id} {...post} />
+                <div key={post.id} className="relative group">
+                    <BlogPost {...post} />
+                    {"cm69ycgqw00009wjyw2stiqao" === userId && (
+                        <button 
+                            onClick={() => onDelete(post.id)}
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 
+                                     text-red-500 hover:text-red-700 transition-opacity"
+                            aria-label="Delete post"
+                        >
+                            <FaTrash size={16} />
+                        </button>
+                    )}
+                </div>
             ))}
 
             <div className="mt-8 flex justify-between">

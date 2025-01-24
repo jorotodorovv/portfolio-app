@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react';
 import useSWR from 'swr';
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
@@ -20,7 +19,7 @@ import CommentSection from './CommentSection';
 import { Session } from 'next-auth';
 
 const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, session: Session | null, postId?: string }) => {
-    const { data: posts, error, mutate } = useSWR<Post[]>('/api/posts', fetchPosts);
+    const { data: posts, error, mutate } = useSWR<Post[]>('api/posts', fetchPosts);
     const { data: sessionData, status } = useSession();
 
     if (error) return <div>Failed to load</div>;
@@ -35,11 +34,10 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
     if (postId) {
         selectedPost = posts.find(p => p.id === postId) || null;
     }
+    const router = useRouter();
 
-    const handleDelete = () => {
+    const handleDelete = (postId : string) => {
         if (!postId) return;
-
-        const router = useRouter();
 
         if (confirm('Are you sure you want to delete this post?')) {
             deletePost(postId, () => {
@@ -51,7 +49,10 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
 
     switch (currentView) {
         case BlogView.LIST:
-            return <BlogList posts={posts} />;
+            return <BlogList
+                posts={posts}
+                onDelete={handleDelete}
+                userId={userId} />;
         case BlogView.CONTENT:
             return selectedPost ? (
                 <article className="prose prose-invert mx-auto">

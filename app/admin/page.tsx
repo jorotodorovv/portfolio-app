@@ -95,7 +95,7 @@ export default function AdminPanel() {
     if (response.ok) {
       const data = await response.json();
 
-      return data.tags;
+      return data.description;
     } else {
       console.error('Failed to generate description with AI');
       return [];
