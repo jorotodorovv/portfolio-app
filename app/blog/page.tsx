@@ -1,24 +1,18 @@
-import BlogList, { Post } from "@/components/BlogList"
-import Loader from "@/components/Loader";
 import { Suspense } from "react"
+import { getServerSession } from 'next-auth'
 
-async function fetchPosts() {
-  const baseUrl = `http://localhost:3000`;
-  const response = await fetch(`${baseUrl}/api/posts`);
-  if (!response.ok) {
-      throw new Error('Failed to fetch posts');
-  }
-  const result = await response.json();
-  return result.posts;
-}
+import { authOptions } from "@/lib/auth";
+
+import Loader from "@/components/Loader";
+import BlogPage from '@/components/BlogPage';
+import { BlogView } from '@/components/BlogView';
 
 export default async function Blog() {
-  const posts: Post[] = await fetchPosts();
+  const session = await getServerSession(authOptions)
 
   return (
     <Suspense fallback={<Loader />}>
-      <BlogList posts={posts} />
+      <BlogPage currentView={BlogView.LIST} session={session} />
     </Suspense>
   )
 }
-

@@ -23,3 +23,17 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json(post);
 }
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+    const { id } = params;
+
+    try {
+        const deletedPost = await prisma.post.delete({
+            where: { id: id },
+        });
+
+        return NextResponse.json(deletedPost, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ message: 'Post not found or could not be deleted' }, { status: 404 });
+    }
+}

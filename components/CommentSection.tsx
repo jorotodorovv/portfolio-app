@@ -14,23 +14,22 @@ export interface Comment {
 
 interface CommentSectionProps {
   postId: string
-  initialComments: Comment[]
 }
 
-export default function CommentSection({ initialComments, postId }: CommentSectionProps) {
-  const [comments, setComments] = useState<Comment[]>(initialComments)
+export default function CommentSection({ postId }: CommentSectionProps) {
+  const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
   const [author, setAuthor] = useState('')
   const [locale, setLocale] = useState<Locale | null>(enUS)
 
   useEffect(() => {
-    if(!navigator || !navigator.language) return;
+    if (!navigator || !navigator.language) return;
 
     const lang = navigator.language.replace('-', '');
     loadLocale(lang);
   }, []);
 
-  const loadLocale = async (lang : string) => {
+  const loadLocale = async (lang: string) => {
     try {
       const localeModule = await import(`date-fns/locale`)
       const locale = localeModule[lang as keyof typeof localeModule] as Locale;
@@ -39,6 +38,24 @@ export default function CommentSection({ initialComments, postId }: CommentSecti
       console.error(`Failed to load locale for ${lang}:`, error);
     }
   }
+
+  const getComments = async (postId: string) => {
+    const response = await fetch(`/api/comments/${postId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const initialComments = await response.json();
+      setComments(initialComments)
+    }else {
+      console.error('Failed to get comments');
+    }
+  }
+
+  getComments(postId);
 
   const submitComment = async (comment: Comment) => {
     const response = await fetch('/api/comments', {
