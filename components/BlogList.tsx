@@ -24,6 +24,10 @@ export interface Post {
     readTime: number;
     tags: Tag[];
     comments: Comment[];
+    user: {
+        id: string;
+        username: string;
+    };
 }
 
 export interface BlogListProps {
@@ -105,7 +109,7 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
             {displayedPosts.map((post) => (
                 <div key={post.id} className="relative group">
                     <BlogPost {...post} />
-                    {"cm69ycgqw00009wjyw2stiqao" === userId && (
+                    {post.user.id === userId && (
                         <button 
                             onClick={() => onDelete(post.id)}
                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 

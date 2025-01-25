@@ -46,7 +46,7 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
           </span>
         ))}
       </div>
-      {"cm69ycgqw00009wjyw2stiqao" === userId && (
+      {post.user.id === userId && (
         <button onClick={() => onDelete(post.id)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
           Delete Post
         </button>

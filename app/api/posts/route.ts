@@ -13,6 +13,7 @@ export async function GET() {
     const posts = await prisma.post.findMany({
         include: {
             tags: true,
+            user: true,
         },
     });
 
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
     const title = formData.get('title') as string;
     const tags = formData.get('tags') as string;
     const description = formData.get('description') as string;
+    const userId = formData.get('userId') as string;
     const content = formData.get('content') as File;
 
     if (!content) {
@@ -47,6 +49,9 @@ export async function POST(request: Request) {
             excerpt: description,
             content: fileContent,
             readTime,
+            user: {
+                connect: { id: userId }, // Connect the post to the user
+            },
             tags: {
                 connectOrCreate: tags.split(',').map(tag => ({
                     where: { name: tag.trim() },

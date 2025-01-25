@@ -9,7 +9,7 @@ export default function AdminPanel() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  const { status } = useSession({
+  const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
       setIsLoading(true)
@@ -44,6 +44,7 @@ export default function AdminPanel() {
         formData.append('title', title)
         formData.append('description', description)
         formData.append('tags', tags.join(', '))
+        formData.append('userId', session?.user?.id || '');
 
         const response = await fetch('/api/posts', {
           method: 'POST',

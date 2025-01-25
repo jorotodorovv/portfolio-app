@@ -13,6 +13,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         where: { id: id },
         include: {
             tags: true,
+            user: true,
             comments: includeComments,
         },
     });

@@ -17,6 +17,8 @@ model Post {
   readTime  Int
   tags      Tag[]    @relation("PostTags")
   comments  Comment[] @relation("PostComments")
+  user      User     @relation(fields: [userId], references: [id], name: "UserPosts")
+  userId    String
 }
 
 model Tag {
@@ -37,5 +39,6 @@ model Comment {
 model User {
   id        String   @id @default(cuid())
   password  String
-  username      String?  @unique
+  username  String?  @unique
+  posts     Post[]   @relation("UserPosts")
 }
