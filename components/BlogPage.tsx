@@ -20,7 +20,8 @@ import { Session } from 'next-auth';
 
 const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, session: Session | null, postId?: string }) => {
     const { data: posts, error, mutate } = useSWR<Post[]>('api/posts', fetchPosts);
-    const { data: sessionData, status } = useSession();
+    const { data: sessionData } = useSession();
+    const router = useRouter();
 
     if (error) return <div>Failed to load</div>;
     if (!posts) return <Loader />;
@@ -34,9 +35,8 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
     if (postId) {
         selectedPost = posts.find(p => p.id === postId) || null;
     }
-    const router = useRouter();
 
-    const handleDelete = (postId : string) => {
+    const handleDelete = (postId: string) => {
         if (!postId) return;
 
         if (confirm('Are you sure you want to delete this post?')) {

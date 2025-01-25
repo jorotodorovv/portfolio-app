@@ -2,11 +2,9 @@
 
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { useRouter } from 'next/navigation';
 import Markdown from 'react-markdown';
 import CodeSnippet from '@/components/CodeSnippet';
 import { Post } from './BlogList';
-import { deletePost } from '@/lib/posts';
 
 interface BlogContentProps {
   post: Post;

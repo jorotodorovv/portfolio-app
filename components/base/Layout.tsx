@@ -9,14 +9,14 @@ export interface LayoutProps {
     children: ReactNode;
 }
 
-export default function Layout({ children } : LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
     return (
         <>
             <Providers>
                 <Background />
                 <Header />
                 <main className="flex-grow container mx-auto px-4 py-8">
-                    <PageTransition>{children}</PageTransition>
+                    <PageTransition id={"1"}>{children}</PageTransition>
                 </main>
                 <Footer />
             </Providers>

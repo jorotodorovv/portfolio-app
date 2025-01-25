@@ -15,16 +15,18 @@ async function retryWithDelay<T>(
 ): Promise<T> {
     try {
         return await fn();
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (retries === 0) throw error;
-        
-        if (error?.response?.status === 503 && error?.response?.data?.estimated_time) {
-            // Wait for the estimated time plus a small buffer
-            const waitTime = (error.response.data.estimated_time * 1000) + 1000;
-            await delay(waitTime);
-        } else {
-            await delay(delayMs);
-        }
+        await delay(delayMs);
+
+        // if (error instanceof Error && 
+        //     (error as AxiosError).response?.status === 503 && 
+        //     (error as AxiosError<T>).response?.data?.estimated_time) {
+        //     const waitTime = ((error as AxiosError).response.data.estimated_time * 1000) + 1000;
+        //     await delay(waitTime);
+        // } else {
+        //     await delay(delayMs);
+        // }
         
         return retryWithDelay(fn, retries - 1, delayMs);
     }
