@@ -57,7 +57,7 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
             return selectedPost ? (
                 <article className="prose prose-invert mx-auto">
                     <BlogContent post={selectedPost} userId={userId} onDelete={handleDelete} />
-                    <SocialShare url={`https://localhost:3000/blog/${selectedPost.id}`} title={selectedPost.title} />
+                    <SocialShare url={`${window.location.origin}/blog/${selectedPost.id}`} title={selectedPost.title} />
                     <CommentSection postId={selectedPost.id} />
                 </article>
             ) : notFound();
