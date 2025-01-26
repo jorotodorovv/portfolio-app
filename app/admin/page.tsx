@@ -9,7 +9,7 @@ export default function AdminPanel() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  const { data: session, status } = useSession({
+  const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       setIsLoading(true)
@@ -19,49 +19,59 @@ export default function AdminPanel() {
     },
   })
 
-  if (status === "loading" || isLoading) {
+  if (isLoading) {
     return <Loader />
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement
-    const file = fileInput?.files?.[0]
+    try {
+      e.preventDefault();
+      setIsLoading(() => true);
 
-    if (file) {
-      const formData = new FormData()
-      formData.append('content', file)
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement
+      const file = fileInput?.files?.[0]
 
-      const title = file.name.replace('.md', '').replace(/[_-]+/g, ' ').replace(/[^\w\s]/g, '');
+      if (file) {
+        const formData = new FormData()
+        formData.append('content', file)
 
-      const reader = new FileReader()
-      reader.onload = async (event) => {
-        const content = event.target?.result as string
+        const title = file.name.replace('.md', '').replace(/[_-]+/g, ' ').replace(/[^\w\s]/g, '');
 
-        const description = await generateDescriptionWithAI(content);
-        const tags = await generateTagsWithAI(content);
+        const reader = new FileReader()
+        reader.onload = async (event) => {
+          const content = event.target?.result as string
 
-        formData.append('title', title)
-        formData.append('description', description)
-        formData.append('tags', tags.join(', '))
-        formData.append('userId', session?.user?.id || '');
+          const description = await generateDescriptionWithAI(content);
+          const tags = await generateTagsWithAI(content);
 
-        const response = await fetch('/api/posts', {
-          method: 'POST',
-          body: formData,
-        })
+          formData.append('title', title)
+          formData.append('description', description)
+          formData.append('tags', tags.join(', '))
+          formData.append('userId', session?.user?.id || '');
 
-        if (response.ok) {
-          const result = await response.json()
-          console.log(result.message)
+          const response = await fetch('/api/posts', {
+            method: 'POST',
+            body: formData,
+          })
 
-          fileInput.value = ''
-          router.push('/blog')
-        } else {
-          console.error('Failed to create post')
+          if (response.ok) {
+            const result = await response.json()
+            router.push('/blog');
+          } else {
+            throw new Error('Failed to create post')
+          }
         }
+
+        reader.readAsText(file)
       }
-      reader.readAsText(file)
+    }
+    catch (ex: unknown) {
+      console.log(ex);
+    }
+    finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 5000);
     }
   }
 

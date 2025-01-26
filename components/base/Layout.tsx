@@ -1,12 +1,12 @@
+import { ReactElement, ReactNode } from 'react'
+
 import Header from './Header'
 import Footer from './Footer'
 import Background from './Background'
-import PageTransition from '../Transition'
 import { Providers } from './Providers'
-import { ReactNode } from 'react'
 
 export interface LayoutProps {
-    children: ReactNode;
+    children: ReactElement;
 }
 
 export default function Layout({ children }: LayoutProps) {
@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
                 <Background />
                 <Header />
                 <main className="flex-grow container mx-auto px-4 py-8">
-                    <PageTransition id={"1"}>{children}</PageTransition>
+                    {children}
                 </main>
                 <Footer />
             </Providers>

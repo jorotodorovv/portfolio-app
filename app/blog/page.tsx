@@ -12,7 +12,9 @@ export default async function Blog() {
 
   return (
     <Suspense fallback={<Loader />}>
-      <BlogPage currentView={BlogView.LIST} session={session} />
+      <BlogPage
+        currentView={BlogView.LIST}
+        session={session} />
     </Suspense>
   )
 }

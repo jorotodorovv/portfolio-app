@@ -7,6 +7,7 @@ import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 
 import BlogPost from '@/components/BlogPost'
 import { Comment } from './CommentSection'
+import Transition from './Transition'
 
 const POSTS_PER_PAGE = 10
 
@@ -37,7 +38,7 @@ export interface BlogListProps {
 }
 
 export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
-    const searchParams : ReadonlyURLSearchParams | null = useSearchParams();
+    const searchParams: ReadonlyURLSearchParams | null = useSearchParams();
 
     const pageParam = searchParams?.get('page')
     const searchParam = searchParams?.get('search')
@@ -107,19 +108,21 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
             </div>
 
             {displayedPosts.map((post) => (
-                <div key={post.id} className="relative group">
-                    <BlogPost {...post} />
-                    {post.user.id === userId && (
-                        <button 
-                            onClick={() => onDelete(post.id)}
-                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 
-                                     text-red-500 hover:text-red-700 transition-opacity"
-                            aria-label="Delete post"
-                        >
-                            <FaTrash size={16} />
-                        </button>
-                    )}
-                </div>
+                <Transition id={post.id}>
+                    <div key={post.id} className="relative group">
+                        <BlogPost {...post} />
+                        {post.user.id === userId && (
+                            <button
+                                onClick={() => onDelete(post.id)}
+                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 
+                        text-red-500 hover:text-red-700 transition-opacity"
+                                aria-label="Delete post"
+                            >
+                                <FaTrash size={16} />
+                            </button>
+                        )}
+                    </div>
+                </Transition>
             ))}
 
             <div className="mt-8 flex justify-between">
