@@ -108,7 +108,7 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
             </div>
 
             {displayedPosts.map((post) => (
-                <Transition id={post.id}>
+                <Transition key={post.id} id={post.id}>
                     <div key={post.id} className="relative group">
                         <BlogPost {...post} />
                         {post.user.id === userId && (
