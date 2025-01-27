@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { FaTrash } from 'react-icons/fa'
 
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 
 import BlogPost from '@/components/BlogPost'
+import BlogPostUploadModal from '@/components/BlogPostUploadModal'
+
 import { Comment } from './CommentSection'
 import Transition from './Transition'
 
@@ -47,6 +49,7 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
     const [search, setSearch] = useState(searchParam || '')
     const [currentPage, setCurrentPage] = useState(parseInt(pageParam || '1', 10))
     const [selectedTag, setSelectedTag] = useState(tagParam || '')
+    const [isUploadModalOpen, setUploadModalOpen] = useState(false)
 
     const filteredPosts = posts.filter((post) => {
         const matchesSearch = post.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -82,6 +85,17 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
     return (
         <div>
             <h1 className="text-4xl font-bold mb-8">Blog Posts</h1>
+
+            {userId && (
+                <div className="flex justify-end mb-8">
+                    <button
+                        type="button"
+                        onClick={() => setUploadModalOpen(true)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Upload Post
+                    </button>
+                </div>
+            )}
 
             <form onSubmit={handleSearch} className="mb-8">
                 <input
@@ -142,6 +156,11 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
                     Next
                 </button>
             </div>
+            <BlogPostUploadModal
+                isOpen={isUploadModalOpen}
+                userId={userId}
+                onClose={() => setUploadModalOpen(false)}
+            />
         </div>
     )
 }
