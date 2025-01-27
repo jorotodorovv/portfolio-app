@@ -1,7 +1,7 @@
 // components/BlogPostUploadModal.tsx
 import { generateDescriptionWithAI, generateTagsWithAI } from '@/endpoints/generate'
 import { createPost } from '@/endpoints/posts'
-import { Suspense, useState } from 'react'
+import { useState } from 'react'
 import Loader from './Loader'
 
 interface BlogPostUploadModalProps {
@@ -11,9 +11,9 @@ interface BlogPostUploadModalProps {
 }
 
 export default function BlogPostUploadModal({ isOpen, userId, onClose }: BlogPostUploadModalProps) {
-  if (!isOpen || !userId) return null;
-
   const [isLoading, setIsLoading] = useState(false);
+
+  if (!isOpen || !userId) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
