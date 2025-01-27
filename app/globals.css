@@ -16,7 +16,7 @@ body {
 }
 
 .prose {
-  max-width: 65ch;
+  max-width: 100ch;
 }
 
 .prose h1,
@@ -38,7 +38,6 @@ body {
 
 .prose code {
   color: #e5e7eb;
-  background-color: #374151;
   border-radius: 0.25em;
 }
 
@@ -59,8 +58,7 @@ body {
 
 .prose code[class*="language-"],
 .prose pre[class*="language-"] {
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: 0.9em;
+  font-size: 1em;
   line-height: 1.5;
 }
 

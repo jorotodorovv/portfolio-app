@@ -4,10 +4,13 @@ import { useEffect } from 'react'
 
 import Prism from 'prismjs'
 
-import 'prismjs/themes/prism-tomorrow.css'
+import '@/ui/prism-vsc-dark-plus.css'
+
+import 'prismjs/components/prism-aspnet'
+import 'prismjs/components/prism-csharp'
+import 'prismjs/components/prism-cshtml'
 import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-css'
-import 'prismjs/components/prism-csharp'
 import 'prismjs/components/prism-bash'
 
 interface CodeSnippetProps {
@@ -17,7 +20,7 @@ interface CodeSnippetProps {
 
 export default function CodeSnippet({ code, language }: CodeSnippetProps) {
   useEffect(() => {
-    Prism.highlightAll()
+    Prism.highlightAll();
   }, [code])
 
   return (
