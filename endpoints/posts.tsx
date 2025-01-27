@@ -1,8 +1,16 @@
 import { Post } from "@/components/BlogList";
 
-export async function fetchPosts(url : string) {
-    const baseUrl = `${window.location.origin}`;
-    const response = await fetch(`${baseUrl}/${url}`);
+export interface PostRequestData {
+    content: string;
+    title: string;
+    description: string;
+    tags: string[];
+    userId: string;
+}
+
+export async function fetchPosts(url: string) {
+    const response = await fetch(`${window.location.origin}/${url}`);
+
     if (!response.ok) {
         throw new Error('Failed to fetch posts');
     }
@@ -12,8 +20,7 @@ export async function fetchPosts(url : string) {
 }
 
 export async function fetchPost(id: string) {
-    const baseUrl = `${window.location.origin}`;
-    const response = await fetch(`${baseUrl}/api/posts/${id}?includeComments=true`);
+    const response = await fetch(`${window.location.origin}/api/posts/${id}?includeComments=true`);
 
     if (!response.ok) {
         throw new Error('Failed to fetch post');
@@ -22,6 +29,25 @@ export async function fetchPost(id: string) {
     const post: Post = await response.json();
 
     return post;
+}
+
+export async function createPost(content: PostRequestData, callback?: () => void) {
+    const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(content),
+    })
+
+    const result = await response.json()
+    if (callback) callback();
+
+    if (!response.ok) {
+        throw new Error('Failed to create post')
+    }
+
+    return result;
 }
 
 export async function deletePost(postId: string, callback?: () => void) {

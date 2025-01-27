@@ -11,7 +11,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 async function retryWithDelay<T>(
     fn: () => Promise<T>,
     retries: number = 3,
-    delayMs: number = 2000
+    delayMs: number = 5000
 ): Promise<T> {
     try {
         return await fn();

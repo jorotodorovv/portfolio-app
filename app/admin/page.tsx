@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Loader from '@/components/Loader'
+import { generateDescriptionWithAI, generateTagsWithAI } from '@/endpoints/generate'
+import { createPost } from '@/endpoints/posts'
 
 export default function AdminPanel() {
   const router = useRouter()
@@ -32,37 +34,35 @@ export default function AdminPanel() {
       const file = fileInput?.files?.[0]
 
       if (file) {
-        const formData = new FormData()
-        formData.append('content', file)
+        const title = file.name
+          .replace('.md', '')
+          .replace(/[_-]+/g, ' ')
+          .replace(/[^\w\s]/g, '');
 
-        const title = file.name.replace('.md', '').replace(/[_-]+/g, ' ').replace(/[^\w\s]/g, '');
+        const reader = new FileReader();
 
-        const reader = new FileReader()
         reader.onload = async (event) => {
           const content = event.target?.result as string
 
-          const description = await generateDescriptionWithAI(content);
-          const tags = await generateTagsWithAI(content);
+          const description: string = await generateDescriptionWithAI(content);
+          const tags: string[] = await generateTagsWithAI(content);
 
-          formData.append('title', title)
-          formData.append('description', description)
-          formData.append('tags', tags.join(', '))
-          formData.append('userId', session?.user?.id || '');
+          const userId = session?.user?.id || null;
 
-          const response = await fetch('/api/posts', {
-            method: 'POST',
-            body: formData,
-          })
-
-          if (response.ok) {
-            const result = await response.json()
-            router.push('/blog');
-          } else {
-            throw new Error('Failed to create post')
+          if (!userId) {
+            throw new Error("User is not authenticated");
           }
-        }
 
-        reader.readAsText(file)
+          createPost({
+            content,
+            title,
+            description,
+            tags,
+            userId
+          }, () => router.push('/blog'));
+        };
+
+        reader.readAsText(file);
       }
     }
     catch (ex: unknown) {
@@ -72,44 +72,6 @@ export default function AdminPanel() {
       setTimeout(() => {
         setIsLoading(false);
       }, 5000);
-    }
-  }
-
-  const generateTagsWithAI = async (content: string) => {
-    const response = await fetch('/api/generate/tags', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-
-      return data.tags;
-    } else {
-      console.error('Failed to generate tags with AI');
-      return [];
-    }
-  }
-
-  const generateDescriptionWithAI = async (content: string) => {
-    const response = await fetch('/api/generate/description', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-
-      return data.description;
-    } else {
-      console.error('Failed to generate description with AI');
-      return [];
     }
   }
 

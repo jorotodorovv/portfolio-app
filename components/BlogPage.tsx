@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
-import { deletePost, fetchPosts } from '@/lib/posts';
+import { deletePost, fetchPosts } from '@/endpoints/posts';
 
 import Loader from './Loader';
 
