@@ -35,11 +35,15 @@ export interface Post {
 
 export interface BlogListProps {
     posts: Post[];
-    onDelete: (postId: string) => void;
+    onDelete: (postId: string, refresh: boolean) => void;
+    onUpload: (
+        e: React.FormEvent, 
+        onLoading: (isLoading: boolean) => void,
+        onClose : () => void) => void;
     userId: string;
 }
 
-export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
+export default function BlogList({ posts, onDelete, onUpload, userId }: BlogListProps) {
     const searchParams: ReadonlyURLSearchParams | null = useSearchParams();
 
     const pageParam = searchParams?.get('page')
@@ -127,7 +131,7 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
                         <BlogPost {...post} />
                         {post.user.id === userId && (
                             <button
-                                onClick={() => onDelete(post.id)}
+                                onClick={() => onDelete(post.id, false)}
                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 
                         text-red-500 hover:text-red-700 transition-opacity"
                                 aria-label="Delete post"
@@ -159,6 +163,7 @@ export default function BlogList({ posts, onDelete, userId }: BlogListProps) {
             <BlogPostUploadModal
                 isOpen={isUploadModalOpen}
                 userId={userId}
+                onSubmit={onUpload}
                 onClose={() => setUploadModalOpen(false)}
             />
         </div>

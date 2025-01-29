@@ -9,7 +9,7 @@ import { Post } from './BlogList';
 interface BlogContentProps {
   post: Post;
   userId: string;
-  onDelete: (postId : string) => void;
+  onDelete: (postId : string, refresh: boolean) => void;
 }
 
 const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
@@ -47,7 +47,7 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
         ))}
       </div>
       {post.user.id === userId && (
-        <button onClick={() => onDelete(post.id)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+        <button onClick={() => onDelete(post.id, true)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
           Delete Post
         </button>
       )}

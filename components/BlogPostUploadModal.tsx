@@ -1,67 +1,23 @@
-// components/BlogPostUploadModal.tsx
-import { generateDescriptionWithAI, generateTagsWithAI } from '@/endpoints/generate'
-import { createPost } from '@/endpoints/posts'
 import { useState } from 'react'
 import Loader from './Loader'
 
 interface BlogPostUploadModalProps {
   isOpen: boolean
   userId: string | null
-  onClose: () => void
+  onClose: () => void,
+  onSubmit: (
+    e: React.FormEvent,
+    onLoading: (isLoading: boolean) => void,
+    onClose: () => void) => void;
 }
 
-export default function BlogPostUploadModal({ isOpen, userId, onClose }: BlogPostUploadModalProps) {
+export default function BlogPostUploadModal({ isOpen, userId, onClose, onSubmit }: BlogPostUploadModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen || !userId) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    try {
-      e.preventDefault()
-      setIsLoading(() => true)
-
-      const fileInput = document.getElementById('fileInput') as HTMLInputElement
-      const file = fileInput?.files?.[0]
-
-      if (file) {
-        const title = file.name
-          .replace('.md', '')
-          .replace(/[_-]+/g, ' ')
-          .replace(/[^\w\s]/g, '')
-
-        const reader = new FileReader()
-
-        reader.onload = async (event) => {
-          const content = event.target?.result as string
-
-          const description: string = await generateDescriptionWithAI(content)
-          const tags: string[] = await generateTagsWithAI(content)
-
-          if (!userId) {
-            throw new Error('User is not authenticated')
-          }
-
-          await createPost(
-            {
-              content,
-              title,
-              description,
-              tags,
-              userId,
-            },
-          )
-        }
-
-        reader.readAsText(file);
-      }
-    } catch (ex: unknown) {
-      console.log(ex)
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-        onClose();
-      }, 5000)
-    }
+    onSubmit(e, setIsLoading, onClose);
   };
 
   return (

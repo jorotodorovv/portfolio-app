@@ -17,7 +17,7 @@ export default function Login() {
       redirect: false,
     })
     if (result?.ok) {
-      router.push('/admin')
+      router.push('/blog')
     } else {
       alert('Login failed')
     }
