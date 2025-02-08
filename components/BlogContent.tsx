@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import Markdown from 'react-markdown';
+import Markdown, { Components } from 'react-markdown';
 import CodeSnippet from '@/components/CodeSnippet';
 import { Post } from './BlogList';
 
@@ -11,6 +11,19 @@ interface BlogContentProps {
   userId: string;
   onDelete: (postId : string, refresh: boolean) => void;
 }
+
+const components : Components = {
+  code: ({ className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className || '');
+
+    return match ? (
+      <CodeSnippet
+        code={String(children).replace(/\n$/, '')}
+        language={match[1]}
+      />
+    ) : children;
+  }
+};
 
 const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
   return (
@@ -21,21 +34,7 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
         <span>{post.readTime} min read</span>
       </div>
       <Markdown
-        components={{
-          code({ className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '');
-            return match ? (
-              <CodeSnippet
-                code={String(children).replace(/\n$/, '')}
-                language={match[1]}
-              />
-            ) : (
-              <code className={className} {...props}>
-                {children}
-              </code>
-            );
-          }
-        }}
+        components={components}
       >
         {post.content}
       </Markdown>

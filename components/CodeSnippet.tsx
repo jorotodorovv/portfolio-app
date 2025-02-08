@@ -12,6 +12,8 @@ import 'prismjs/components/prism-cshtml'
 import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-css'
 import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-yaml'
+import 'prismjs/components/prism-json'
 
 interface CodeSnippetProps {
   code: string

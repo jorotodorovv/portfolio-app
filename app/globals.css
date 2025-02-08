@@ -32,8 +32,15 @@ body {
 .prose ul,
 .prose ol {
   color: #d1d5db;
-  margin-bottom: 2rem;
-  /* Space below */
+}
+
+.prose p {
+  margin-bottom: 1rem; 
+}
+
+.prose strong,
+.prose em {
+  color: burlywood;
 }
 
 .prose code {
@@ -71,13 +78,13 @@ body {
 .prose h2 {
   font-size: 2rem;
   margin-bottom: 2rem;
-  margin-top: 2rem;
+  margin-top: 4rem;
 }
 
 .prose h3 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
-  margin-top: 1rem;
+  margin-top: 3rem;
 }
 
 .prose h4 {
@@ -93,4 +100,34 @@ body {
 .prose h6 {
   font-size: 0.25rem;
   margin-bottom: 0.5rem;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.prose ul ul {
+  list-style-type: circle;
+}
+
+.prose ul ul ul {
+  list-style-type: none;
+}
+
+.prose li {
+  margin-bottom: 1rem;
+}
+
+.prose li li {
+  margin-bottom: 0rem;
+}
+
+
+.prose li li p {
+  margin-bottom: 0rem; 
+}
+
+.prose ul ul ul li {
+  margin-bottom: 0px;
 }
