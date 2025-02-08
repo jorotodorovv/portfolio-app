@@ -9,11 +9,11 @@ import { Post } from './BlogList';
 interface BlogContentProps {
   post: Post;
   userId: string;
-  onDelete: (postId : string, refresh: boolean) => void;
+  onDelete: (postId: string, refresh: boolean) => void;
 }
 
-const components : Components = {
-  code: ({ className, children, ...props }) => {
+const components: Components = {
+  code: ({ className, children }) => {
     const match = /language-(\w+)/.exec(className || '');
 
     return match ? (
