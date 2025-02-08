@@ -13,16 +13,7 @@ interface BlogContentProps {
 }
 
 const components: Components = {
-  code: ({ className, children }) => {
-    const match = /language-(\w+)/.exec(className || '');
-
-    return match ? (
-      <CodeSnippet
-        code={String(children).replace(/\n$/, '')}
-        language={match[1]}
-      />
-    ) : children;
-  }
+  code: ({ className, children }) => <CodeSnippet code={String(children)} className={className} />
 };
 
 const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
@@ -33,9 +24,7 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
         <span>{formatDistanceToNow(new Date(post.date), { addSuffix: true })}</span>
         <span>{post.readTime} min read</span>
       </div>
-      <Markdown
-        components={components}
-      >
+      <Markdown components={components}>
         {post.content}
       </Markdown>
       <div className="mt-8">

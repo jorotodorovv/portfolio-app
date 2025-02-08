@@ -35,17 +35,17 @@ body {
 }
 
 .prose p {
-  margin-bottom: 1rem; 
-}
-
-.prose strong,
-.prose em {
-  color: burlywood;
+  margin-bottom: 1rem;
 }
 
 .prose code {
   color: #e5e7eb;
   border-radius: 0.25em;
+}
+
+.prose p code {
+  background-color: #1f2937;
+  padding-inline: 0.2rem;
 }
 
 .prose pre {
@@ -125,7 +125,7 @@ body {
 
 
 .prose li li p {
-  margin-bottom: 0rem; 
+  margin-bottom: 0rem;
 }
 
 .prose ul ul ul li {

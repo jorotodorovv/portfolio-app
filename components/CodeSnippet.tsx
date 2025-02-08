@@ -17,16 +17,20 @@ import 'prismjs/components/prism-json'
 
 interface CodeSnippetProps {
   code: string
-  language: string
+  className: string | undefined
 }
 
-export default function CodeSnippet({ code, language }: CodeSnippetProps) {
+export default function CodeSnippet({ code, className }: CodeSnippetProps) {
   useEffect(() => {
     Prism.highlightAll();
   }, [code])
 
+  const match = /language-(\w+)/.exec(className || '');
+
+  let styles: string | undefined = match ? `language-${match[1]}` : 'token function';
+
   return (
-    <code className={`rounded-md language-${language}`}>{code}</code>
+    <code className={styles}>{code}</code>
   )
 }
 
