@@ -40,12 +40,12 @@ export async function createPost(content: PostRequestData, callback?: () => void
         body: JSON.stringify(content),
     })
 
-    const result = await response.json()
-    if (callback) callback();
-
     if (!response.ok) {
         throw new Error('Failed to create post')
     }
+
+    const result = await response.json()
+    if (callback) callback();
 
     return result;
 }
