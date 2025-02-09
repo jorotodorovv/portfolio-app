@@ -63,16 +63,15 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
             if (file) {
                 const title = file.name
                     .replace('.md', '')
-                    .replace(/[_-]+/g, ' ')
-                    .replace(/[^\w\s]/g, '')
+                    .replace(/[_-]+/g, ' ');
 
                 const reader = new FileReader()
 
                 reader.onload = async (event) => {
                     const content = event.target?.result as string
 
-                    const description: string = await generateDescriptionWithAI(content)
-                    const tags: string[] = await generateTagsWithAI(content)
+                    const description: string = await generateDescriptionWithAI(content);
+                    const tags: string[] = await generateTagsWithAI(content);
 
                     if (!userId) {
                         throw new Error('User is not authenticated')
@@ -82,7 +81,7 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
                         {
                             content,
                             title,
-                            description,
+                            description: description?.replace(/\s\.\s*/g, '. '),
                             tags,
                             userId,
                         },

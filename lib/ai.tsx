@@ -1,9 +1,14 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Define an enum for model types
 export enum ModelType {
     SUMMARY = 'summary',
     KEYWORD = 'keyword',
+}
+
+interface RetryErrorData {
+    error: string;
+    estimated_time: number;
 }
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -17,19 +22,22 @@ async function retryWithDelay<T>(
         return await fn();
     } catch (error: unknown) {
         if (retries === 0) throw error;
-        await delay(delayMs);
 
-        // if (error instanceof Error && 
-        //     (error as AxiosError).response?.status === 503 && 
-        //     (error as AxiosError<T>).response?.data?.estimated_time) {
-        //     const waitTime = ((error as AxiosError).response.data.estimated_time * 1000) + 1000;
-        //     await delay(waitTime);
-        // } else {
-        //     await delay(delayMs);
-        // }
-        
-        return retryWithDelay(fn, retries - 1, delayMs);
+        const retryError = error as AxiosError<RetryErrorData>;
+
+        if (retryError &&
+            retryError.response &&
+            retryError.response.status === 503 &&
+            retryError.response.data?.estimated_time) {
+            const waitTime = (retryError.response.data.estimated_time * 1000) + 1000;
+            await delay(waitTime);
+        }
+        else {
+            await delay(delayMs);
+        }
     }
+
+    return retryWithDelay(fn, retries - 1, delayMs);
 }
 
 // Update the generateOutput function to accept a model type
