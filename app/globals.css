@@ -43,7 +43,7 @@ body {
   border-radius: 0.25em;
 }
 
-.prose p code {
+.prose .highlight {
   background-color: #1f2937;
   padding-inline: 0.2rem;
 }
