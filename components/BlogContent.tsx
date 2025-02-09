@@ -2,19 +2,14 @@
 
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import Markdown, { Components } from 'react-markdown';
-import CodeSnippet from '@/components/CodeSnippet';
 import { Post } from './BlogList';
+import Markdown from './base/Markdown';
 
 interface BlogContentProps {
   post: Post;
   userId: string;
   onDelete: (postId: string, refresh: boolean) => void;
 }
-
-const components: Components = {
-  code: ({ className, children }) => <CodeSnippet code={String(children)} className={className} />
-};
 
 const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
   return (
@@ -24,9 +19,7 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
         <span>{formatDistanceToNow(new Date(post.date), { addSuffix: true })}</span>
         <span>{post.readTime} min read</span>
       </div>
-      <Markdown components={components}>
-        {post.content}
-      </Markdown>
+      <Markdown content={post.content} />
       <div className="mt-8">
         {post.tags.map((tag) => (
           <span key={tag.id} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
