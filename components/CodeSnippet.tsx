@@ -27,7 +27,7 @@ export default function CodeSnippet({ code, className }: CodeSnippetProps) {
 
   const match = /language-(\w+)/.exec(className || '');
 
-  let styles: string | undefined = match ? `language-${match[1]}` : 'token function';
+  const styles: string | undefined = match ? `language-${match[1]}` : 'token function';
 
   return (
     <code className={styles}>{code}</code>
