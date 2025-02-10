@@ -88,8 +88,6 @@ export default function BlogList({ posts, onDelete, onUpload, userId }: BlogList
 
     return (
         <div>
-            <h1 className="text-4xl font-bold mb-8">Blog Posts</h1>
-
             {userId && (
                 <div className="flex justify-end mb-8">
                     <button
