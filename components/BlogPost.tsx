@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { Post } from './BlogList'
 
-export default function BlogPost({ id, title, url, excerpt, date, readTime, tags, user }: Post) {
+export default function BlogPost({ title, url, excerpt, date, readTime, tags, user }: Post) {
   return (
     <article className="bg-gray-800 p-6 rounded-lg shadow-md mb-8">
       <Link href={`/blog/${url}`}>
