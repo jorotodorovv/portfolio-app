@@ -20,7 +20,7 @@ import SocialShare from './SocialShare';
 import CommentSection from './CommentSection';
 import { Session } from 'next-auth';
 
-const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, session: Session | null, postId?: string }) => {
+const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, session: Session | null, postUrl?: string }) => {
     const { data: posts, error, mutate } = useSWR<Post[]>('api/posts', fetchPosts);
     const { data: sessionData } = useSession();
     const router = useRouter();
@@ -34,8 +34,8 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
 
     let selectedPost: Post | null = null;
 
-    if (postId) {
-        selectedPost = posts.find(p => p.id === postId) || null;
+    if (postUrl) {
+        selectedPost = posts.find(p => p.url === postUrl) || null;
     }
 
     const handleDelete = (postId: string, refresh: boolean) => {
@@ -53,10 +53,14 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
         e: React.FormEvent,
         onLoading: (isLoading: boolean) => void,
         onClose: () => void) => {
-        try {
-            e.preventDefault()
+        try {          
+            e.preventDefault()        
             onLoading(true);
-
+            
+            if (!userId) {
+                throw new Error('User is not authenticated')
+            }
+            
             const fileInput = document.getElementById('fileInput') as HTMLInputElement
             const file = fileInput?.files?.[0]
 
@@ -73,14 +77,16 @@ const BlogPage = ({ currentView, session, postId }: { currentView: BlogView, ses
                     const description: string = await generateDescriptionWithAI(content);
                     const tags: string[] = await generateTagsWithAI(content);
 
-                    if (!userId) {
-                        throw new Error('User is not authenticated')
-                    }
+                    const url = title
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-|-$/g, '');
 
                     await createPost(
                         {
                             content,
                             title,
+                            url,
                             description: description?.replace(/\s\.\s*/g, '. '),
                             tags,
                             userId,

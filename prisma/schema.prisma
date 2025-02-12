@@ -10,7 +10,8 @@ datasource db {
 
 model Post {
   id        String   @id @default(cuid())
-  title     String
+  title     String   
+  url       String  @unique @default(cuid())
   excerpt   String
   content   String
   date      DateTime @default(now())

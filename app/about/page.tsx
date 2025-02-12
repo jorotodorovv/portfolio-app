@@ -31,20 +31,20 @@ export default function About() {
           </div>
         </div>
         <p className="text-lg text-gray-300">
-        <strong className="token function">Hey there!</strong>
+        <strong>Hey there!</strong>
         <br/>
         <br/>
         I’m a developer who enjoys creating cool and useful things just by writing code.
         <br/>
-        I’ve been working with web technologies for the past <strong className="token function">6+ years</strong>, 
-        building back-end and front-end solutuions.
+        I’ve been working with web technologies for the past <strong>6+ years</strong>, 
+        building back-end and front-end solutions.
         <br/>
         Always eager to learn, experiment, and tackle new challenges.
         <br/>
         Right now, I’m freelancing and open to help out with whatever problem you throw at me.
         <br/>
         <br/>
-        <strong className="token function">Let’s connect and build something together!</strong>
+        <strong>Let’s connect and build something together!</strong>
         </p>
       </section>
 

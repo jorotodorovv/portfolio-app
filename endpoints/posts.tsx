@@ -3,6 +3,7 @@ import { Post } from "@/components/BlogList";
 export interface PostRequestData {
     content: string;
     title: string;
+    url: string;
     description: string;
     tags: string[];
     userId: string;

@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    const { content, title, description, tags, userId }: PostRequestData = await request.json();
+    const { content, title, url, description, tags, userId }: PostRequestData = await request.json();
 
     if (!content) {
         return NextResponse.json({ message: 'No content file provided' }, { status: 400 });
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         data: {
             title,
             excerpt: description,
+            url,
             content,
             readTime,
             user: {

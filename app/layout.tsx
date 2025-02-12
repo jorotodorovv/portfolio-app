@@ -6,8 +6,7 @@ import Layout, { LayoutProps } from '@/components/base/Layout'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Developer Portfolio',
-  description: 'A software developer portfolio with blog and admin panel',
+  title: 'My Portfolio',
 }
 
 export default function RootLayout({ children }: LayoutProps) {

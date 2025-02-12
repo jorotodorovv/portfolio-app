@@ -21,6 +21,7 @@ export interface Tag {
 export interface Post {
     id: string;
     title: string;
+    url: string;
     excerpt: string;
     content: string;
     date: Date;
@@ -124,8 +125,8 @@ export default function BlogList({ posts, onDelete, onUpload, userId }: BlogList
             </div>
 
             {displayedPosts.map((post) => (
-                <Transition key={post.id} id={post.id}>
-                    <div key={post.id} className="relative group">
+                <Transition key={post.url} id={post.id}>
+                    <div key={post.url} className="relative group">
                         <BlogPost {...post} />
                         {post.user.id === userId && (
                             <button

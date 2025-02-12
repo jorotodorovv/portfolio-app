@@ -15,7 +15,7 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
       <BlogPage 
       currentView={BlogView.CONTENT} 
       session={session} 
-      postId={params.id} />
+      postUrl={params.id} />
     </Suspense>
   )
 }
