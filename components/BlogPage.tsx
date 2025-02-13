@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 
 import { generateDescriptionWithAI, generateTagsWithAI } from '@/endpoints/generate'
 import { createPost } from '@/endpoints/posts'
-import { deletePost, fetchPosts } from '@/endpoints/posts';
+import { deletePost } from '@/endpoints/posts';
 
 import Loader from './Loader';
 
@@ -19,14 +19,19 @@ import { BlogView } from './BlogView';
 import SocialShare from './SocialShare';
 import CommentSection from './CommentSection';
 import { Session } from 'next-auth';
+import { fetchData } from '@/endpoints/core';
+
+interface PostResponse {
+    posts: Post[];
+}
 
 const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, session: Session | null, postUrl?: string }) => {
-    const { data: posts, error, mutate } = useSWR<Post[]>('api/posts', fetchPosts);
+    const { data, error, mutate } = useSWR<PostResponse>('posts', fetchData);
     const { data: sessionData } = useSession();
     const router = useRouter();
 
     if (error) return <div>Failed to load</div>;
-    if (!posts) return <Loader />;
+    if (!data || !data.posts) return <Loader />;
 
     session = session ?? sessionData;
 
@@ -35,7 +40,7 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
     let selectedPost: Post | null = null;
 
     if (postUrl) {
-        selectedPost = posts.find(p => p.url === postUrl) || null;
+        selectedPost = data.posts.find(p => p.url === postUrl) || null;
     }
 
     const handleDelete = (postId: string, refresh: boolean) => {
@@ -53,14 +58,14 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
         e: React.FormEvent,
         onLoading: (isLoading: boolean) => void,
         onClose: () => void) => {
-        try {          
-            e.preventDefault()        
+        try {
+            e.preventDefault()
             onLoading(true);
-            
+
             if (!userId) {
                 throw new Error('User is not authenticated')
             }
-            
+
             const fileInput = document.getElementById('fileInput') as HTMLInputElement
             const file = fileInput?.files?.[0]
 
@@ -111,7 +116,7 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
     switch (currentView) {
         case BlogView.LIST:
             return <BlogList
-                posts={posts}
+                posts={data.posts}
                 onUpload={handleUpload}
                 onDelete={handleDelete}
                 userId={userId} />;
