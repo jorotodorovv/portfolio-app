@@ -13,6 +13,10 @@ interface BlogContentProps {
 }
 
 const components: Components = {
+  pre: ({ children }) => <pre className='bg-gray-800 text-gray-200 overflow-x-auto p-4 mb-5 rounded-lg text-base leading-relaxed'>{children}</pre>,
+  ul: ({ children }) => <ul className="text-muted-foreground">{children}</ul>,
+  ol: ({ children }) => <ol className="text-muted-foreground">{children}</ol>,
+  p: ({ children }) => <p className="text-muted-foreground mb-4">{children}</p>,
   code: ({ className, children }) => <CodeSnippet code={String(children)} className={className} />
 };
 

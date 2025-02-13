@@ -27,7 +27,7 @@ export default function CodeSnippet({ code, className }: CodeSnippetProps) {
   const match = /language-(\w+)/.exec(className || '');
 
   const styles: string | undefined = match ?
-    `language-${match[1]}` : 'token function highlight';
+    `language-${match[1]}` : 'token function bg-code px-1';
 
   const highlightCode = (codeElement : HTMLElement) => {
     if (codeElement && !isHighlighted) {
@@ -37,7 +37,7 @@ export default function CodeSnippet({ code, className }: CodeSnippetProps) {
   };
 
   const loadCode = (codeRef: React.RefObject<HTMLElement>) =>
-    <code ref={codeRef} className={styles}>{code}</code>;
+    <code ref={codeRef} className={`${styles} text-base leading-relaxed`}>{code}</code>;
 
   return <Lazy
     component={loadCode}
