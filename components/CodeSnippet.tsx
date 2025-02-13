@@ -1,6 +1,5 @@
 'use client'
-
-import { useEffect } from 'react'
+import React, { useState } from 'react';
 
 import Prism from 'prismjs'
 
@@ -15,22 +14,33 @@ import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-yaml'
 import 'prismjs/components/prism-json'
 
+import Lazy from './base/Lazy';
+
 interface CodeSnippetProps {
   code: string
   className: string | undefined
 }
 
 export default function CodeSnippet({ code, className }: CodeSnippetProps) {
-  useEffect(() => {
-    Prism.highlightAll();
-  }, [code])
+  const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
 
   const match = /language-(\w+)/.exec(className || '');
 
-  const styles: string | undefined = match ? `language-${match[1]}` : 'token function highlight';
+  const styles: string | undefined = match ?
+    `language-${match[1]}` : 'token function highlight';
 
-  return (
-    <code className={styles}>{code}</code>
-  )
+  const highlightCode = (codeElement : HTMLElement) => {
+    if (codeElement && !isHighlighted) {
+      Prism.highlightElement(codeElement);
+      setIsHighlighted(true);
+    }
+  };
+
+  const loadCode = (codeRef: React.RefObject<HTMLElement>) =>
+    <code ref={codeRef} className={styles}>{code}</code>;
+
+  return <Lazy
+    component={loadCode}
+    onObserve={highlightCode}
+    state={[code, className]} />
 }
-
