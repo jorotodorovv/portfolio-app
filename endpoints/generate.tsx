@@ -1,37 +1,27 @@
-export const generateTagsWithAI = async (content: string) => {
-    const response = await fetch('/api/generate/tags', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
-    });
+import { fetchData, FetchMethods } from "./core";
 
-    if (response.ok) {
-        const data = await response.json();
-
+export const generateTagsWithAI = async (content: string): Promise<string[]> => {
+    try {
+        const data: { tags: string[] } = await fetchData('generate/tags', {
+            method: FetchMethods.POST,
+            body: { content },
+        });
         return data.tags;
-    } else {
-        console.error('Failed to generate tags with AI');
+    } catch (error) {
+        console.error('Failed to generate tags with AI', error);
         return [];
     }
 }
 
-export const generateDescriptionWithAI = async (content: string) => {
-    const response = await fetch('/api/generate/description', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-
+export const generateDescriptionWithAI = async (content: string): Promise<string> => {
+    try {
+        const data: { description: string } = await fetchData('generate/description', {
+            method: FetchMethods.POST,
+            body: { content },
+        });
         return data.description;
-    } else {
-        console.error('Failed to generate description with AI');
-        return [];
+    } catch (error) {
+        console.error('Failed to generate description with AI', error);
+        return "";
     }
 }
