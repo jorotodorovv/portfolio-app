@@ -27,7 +27,8 @@ export default function CodeSnippet({ code, className }: CodeSnippetProps) {
   const match = /language-(\w+)/.exec(className || '');
 
   const styles: string | undefined = match ?
-    `language-${match[1]}` : 'token function bg-code px-1';
+    `language-${match[1]}` : 
+    'token function bg-code px-1';
 
   const highlightCode = (codeElement : HTMLElement) => {
     if (codeElement && !isHighlighted) {

@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import Markdown, { Components } from 'react-markdown';
-import CodeSnippet from '@/components/CodeSnippet';
+
 import { Post } from './BlogList';
+import Markdown from './base/Markdown';
 
 interface BlogContentProps {
   post: Post;
@@ -12,25 +12,15 @@ interface BlogContentProps {
   onDelete: (postId: string, refresh: boolean) => void;
 }
 
-const components: Components = {
-  pre: ({ children }) => <pre className='bg-gray-800 text-gray-200 overflow-x-auto p-4 mb-5 rounded-lg text-base leading-relaxed'>{children}</pre>,
-  ul: ({ children }) => <ul className="text-muted-foreground">{children}</ul>,
-  ol: ({ children }) => <ol className="text-muted-foreground">{children}</ol>,
-  p: ({ children }) => <p className="text-muted-foreground mb-4">{children}</p>,
-  code: ({ className, children }) => <CodeSnippet code={String(children)} className={className} />
-};
-
 const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
   return (
     <>
-      <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+      <h1 className="text-5xl font-bold mb-10 mt-10">{post.title}</h1>
       <div className="flex justify-between items-center text-sm text-gray-500 mb-8">
         <span>{formatDistanceToNow(new Date(post.date), { addSuffix: true })}</span>
         <span>{post.readTime} min read</span>
       </div>
-      <Markdown components={components}>
-        {post.content}
-      </Markdown>
+      <Markdown content={post.content} />
       <div className="mt-8">
         {post.tags.map((tag) => (
           <span key={tag.id} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
