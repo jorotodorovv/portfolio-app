@@ -10,6 +10,5 @@
       "env": {
         "PUBLIC_API_URL": "[[ $VERCEL_GIT_COMMIT_REF == 'main' ? 'https://portfolio-app-jorotodorovvs-projects.vercel.app/' : ( $VERCEL_GIT_COMMIT_REF == 'develop' ? 'https://develop--my-portfolio-app.vercel.app' : 'https://portfolio-app-git-' + $VERCEL_GIT_COMMIT_REF + '-jorotodorovvs-projects.vercel.app' ) ]]"
       }
-    },
-    "buildCommand": "npm full:build"
+    }
   }
