@@ -6,11 +6,11 @@ export interface PostRequestData {
     url: string;
     description: string;
     tags: string[];
-    userId: string;
+    userId: string | undefined;
 }
 
 export const createPost = (content: PostRequestData, callback?: () => void) =>
     fetchData('posts', { method: FetchMethods.POST, body: content, callback });
 
-export const deletePost = (id: string, callback?: () => void) =>
-    fetchData('posts', { method: FetchMethods.DELETE, query: [id], callback });
+export const deletePost = (postId: string, userId: string, callback?: () => void) =>
+    fetchData('posts', { method: FetchMethods.DELETE, body: { userId }, query: [postId], callback });

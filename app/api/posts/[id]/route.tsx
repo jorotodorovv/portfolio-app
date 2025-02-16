@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -9,14 +7,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { id } = params;
 
     const url = new URL(request.url);
-    const includeComments = url.searchParams.get('includeComments') === 'true';
+    const comments = url.searchParams.get('comments') === 'true';
 
     const post = await prisma.post.findUnique({
         where: { url: id },
         include: {
             tags: true,
             user: true,
-            comments: includeComments,
+            comments,
         },
     });
 
@@ -28,10 +26,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const session = await getServerSession(authOptions);
+    const { userId }: { userId: string } = await request.json();
 
-    if (!session) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (!userId) {
+        return NextResponse.json({ message: 'User is not authenticated' }, { status: 401 });
     }
 
     const { id } = params;
@@ -43,11 +41,11 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         });
 
         if (!post) {
-            return NextResponse.json({ message: "Post not found" }, { status: 404 });
+            return NextResponse.json({ message: 'Post not found' }, { status: 404 });
         }
 
-        if (post.userId !== session.user.id) {
-            return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+        if (post.userId !== userId) {
+            return NextResponse.json({ message: 'User is not authorized to delete this post' }, { status: 403 });
         }
 
         // First delete all related comments

@@ -16,6 +16,12 @@ interface FetchOptions<TBody> {
     contentType?: string;
 }
 
+export enum FetchEndpoints {
+    POSTS = 'posts',
+    COMMENTS = 'comments',
+    GENERATE = 'generate',
+}
+
 export async function fetchData<T, TBody>(endpoint: string, options: FetchOptions<TBody> = {}): Promise<T> {
     const {
         query,

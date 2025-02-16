@@ -22,6 +22,10 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'No content file provided' }, { status: 400 });
     }
 
+    if (!userId) {
+        return NextResponse.json({ message: 'User is not authenticated' }, { status: 401 });
+    }
+
     const readTime = Math.ceil(content.split(' ').length / 200);
 
     const newPost = await prisma.post.create({

@@ -2,13 +2,8 @@
 
 import useSWR from 'swr';
 
-import { useRouter } from 'next/navigation';
+import { Session } from 'next-auth';
 import { notFound } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-
-import { generateDescriptionWithAI, generateTagsWithAI } from '@/endpoints/generate'
-import { createPost } from '@/endpoints/posts'
-import { deletePost } from '@/endpoints/posts';
 
 import Loader from './Loader';
 
@@ -18,22 +13,22 @@ import { BlogView } from './BlogView';
 
 import SocialShare from './SocialShare';
 import CommentSection from './CommentSection';
-import { Session } from 'next-auth';
-import { fetchData } from '@/endpoints/core';
+
+import { fetchData, FetchEndpoints } from '@/endpoints/core';
+import { useBlog } from '@/hooks/useBlog';
 
 interface PostResponse {
     posts: Post[];
 }
 
 const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, session: Session | null, postUrl?: string }) => {
-    const { data, error, mutate } = useSWR<PostResponse>('posts', fetchData);
-    const { data: sessionData } = useSession();
-    const router = useRouter();
+    const { data, error } = useSWR<PostResponse>(FetchEndpoints.POSTS, fetchData);
+
+    const { handleDelete, handleUpload } = useBlog(session);
+
 
     if (error) return <div>Failed to load</div>;
     if (!data || !data.posts) return <Loader />;
-
-    session = session ?? sessionData;
 
     const userId = session?.user?.id || '';
 
@@ -42,76 +37,6 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
     if (postUrl) {
         selectedPost = data.posts.find(p => p.url === postUrl) || null;
     }
-
-    const handleDelete = (postId: string, refresh: boolean) => {
-        if (!postId) return;
-
-        if (confirm('Are you sure you want to delete this post?')) {
-            deletePost(postId, () => {
-                mutate();
-                if (refresh) router.push('/blog')
-            });
-        }
-    };
-
-    const handleUpload = async (
-        e: React.FormEvent,
-        onLoading: (isLoading: boolean) => void,
-        onClose: () => void) => {
-        try {
-            e.preventDefault()
-            onLoading(true);
-
-            if (!userId) {
-                throw new Error('User is not authenticated')
-            }
-
-            const fileInput = document.getElementById('fileInput') as HTMLInputElement
-            const file = fileInput?.files?.[0]
-
-            if (file) {
-                const title = file.name
-                    .replace('.md', '')
-                    .replace(/[_-]+/g, ' ');
-
-                const reader = new FileReader()
-
-                reader.onload = async (event) => {
-                    const content = event.target?.result as string
-
-                    const description: string = await generateDescriptionWithAI(content);
-                    const tags: string[] = await generateTagsWithAI(content);
-
-                    const url = title
-                        .toLowerCase()
-                        .replace(/[^a-z0-9]+/g, '-')
-                        .replace(/^-|-$/g, '');
-
-                    await createPost(
-                        {
-                            content,
-                            title,
-                            url,
-                            description: description?.replace(/\s\.\s*/g, '. '),
-                            tags,
-                            userId,
-                        },
-                        () => {
-                            mutate().then(() => {
-                                onLoading(false);
-                                onClose();
-                            });
-                        }
-                    )
-                }
-
-                reader.readAsText(file);
-            }
-        } catch (ex: unknown) {
-            console.log(ex)
-        }
-    };
-
 
     switch (currentView) {
         case BlogView.LIST:
