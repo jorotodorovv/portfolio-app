@@ -1,7 +1,5 @@
 'use client'
 
-import useSWR from 'swr';
-
 import { Session } from 'next-auth';
 import { notFound } from 'next/navigation';
 
@@ -10,37 +8,48 @@ import Loader from './Loader';
 import BlogList, { Post } from './BlogList';
 import { BlogView } from './BlogView';
 
-import { fetchData, FetchEndpoints } from '@/endpoints/core';
 import { useBlog } from '@/hooks/useBlog';
 import BlogArticle from './BlogArticle';
+import { useCallback, useEffect, useState } from 'react';
+import { fetchData, FetchEndpoints } from '@/endpoints/core';
 
 interface PostResponse {
     posts: Post[];
 }
 
-const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, session: Session | null, postUrl?: string }) => {
-    const endpoint = currentView === BlogView.LIST ?
-        FetchEndpoints.POSTS :
-        [FetchEndpoints.POSTS, postUrl].join('/');
+const BlogPage = ({ currentView, initialPosts, session, postUrl }:
+    { currentView: BlogView, initialPosts: Post[], session: Session | null, postUrl?: string }) => {
+    const [posts, setPosts] = useState<Post[]>(initialPosts);
 
-    const { data, error } = useSWR<PostResponse>(endpoint, fetchData);
-    const { handleDelete, handleUpload } = useBlog(session);
+    const refreshPosts = useCallback(async () => {
+        try {
+            const response: PostResponse = await fetchData(FetchEndpoints.POSTS);
+            setPosts(response.posts);
+        } catch (error) {
+            console.error("Error refreshing posts:", error);
+        }
+    }, []);
 
-    if (error) return <div>Failed to load</div>;
-    if (!data || !data.posts) return <Loader />;
+    useEffect(() => {
+        setPosts(initialPosts);
+    }, [initialPosts]);
+
+    const { handleDelete, handleUpload } = useBlog(session, refreshPosts);
+
+    if (!initialPosts) return <Loader />;
 
     const userId = session?.user?.id || '';
 
     switch (currentView) {
         case BlogView.LIST:
             return <BlogList
-                posts={data.posts}
+                posts={posts}
                 onUpload={handleUpload}
                 onDelete={handleDelete}
                 userId={userId} />;
         case BlogView.CONTENT:
             return <BlogArticle
-                posts={data.posts}
+                posts={posts}
                 postUrl={postUrl || ''}
                 userId={userId}
                 onDelete={handleDelete} />

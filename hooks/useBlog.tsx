@@ -1,15 +1,15 @@
-import useSWR from 'swr';
-
+import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
-import { fetchData, FetchEndpoints } from '@/endpoints/core';
 import { deletePost, createPost } from '@/endpoints/posts';
 import { generateDescriptionWithAI, generateTagsWithAI } from '@/endpoints/generate';
-import { Session } from 'next-auth';
+import { Post } from '@/components/BlogList';
 
-export const useBlog = (session: Session | null) => {
-    const { mutate } = useSWR(FetchEndpoints.POSTS, fetchData);
+interface PostResponse {
+  posts: Post[];
+}
 
+export const useBlog = (session: Session | null, onRefreshPosts: () => Promise<void>) => {
     const router = useRouter();
 
     const userId = session?.user?.id || '';
@@ -19,7 +19,7 @@ export const useBlog = (session: Session | null) => {
 
         if (confirm('Are you sure you want to delete this post?')) {
             deletePost(postId, userId, () => {
-                mutate();
+                onRefreshPosts();
                 if (refresh) router.push('/blog');
             });
         }
@@ -65,7 +65,7 @@ export const useBlog = (session: Session | null) => {
                             userId,
                         },
                         () => {
-                            mutate().then(() => {
+                            onRefreshPosts().then(() => {
                                 onLoading(false);
                                 onClose();
                             });

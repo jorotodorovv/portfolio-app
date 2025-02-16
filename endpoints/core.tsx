@@ -28,10 +28,12 @@ export async function fetchData<T, TBody>(endpoint: string, options: FetchOption
         body,
         callback,
         method = FetchMethods.GET,
-        contentType = DEFAULT_CONTNET_TYPE
+        contentType = DEFAULT_CONTNET_TYPE,
     } = options;
 
-    let url = `${window.location.origin}/api/${endpoint}`;
+    const baseUrl = process.env.PUBLIC_API_URL || '';
+
+    let url = `${baseUrl}/api/${endpoint}`;
 
     if (query) {
         url += '/' + query.join('/');
