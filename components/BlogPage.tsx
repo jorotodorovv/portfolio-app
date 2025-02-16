@@ -96,7 +96,12 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
                             tags,
                             userId,
                         },
-                        () => mutate()
+                        () => {
+                            mutate().then(() => {
+                                onLoading(false);
+                                onClose();
+                            });
+                        }
                     )
                 }
 
@@ -104,11 +109,6 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
             }
         } catch (ex: unknown) {
             console.log(ex)
-        } finally {
-            setTimeout(() => {
-                onLoading(false)
-                onClose();
-            }, 5000)
         }
     };
 

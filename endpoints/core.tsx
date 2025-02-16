@@ -48,10 +48,10 @@ export async function fetchData<T, TBody>(endpoint: string, options: FetchOption
 
         const result = await response.json();
 
-        if (callback) callback();
-
         return result as T;
     } catch (error: any) {
         throw error;
+    } finally {
+        if (callback) callback();
     }
 }
