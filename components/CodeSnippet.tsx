@@ -37,11 +37,11 @@ export default function CodeSnippet({ code, className }: CodeSnippetProps) {
     }
   };
 
-  const loadCode = (codeRef: React.RefObject<HTMLElement>) =>
+  const renderCode = (codeRef: React.RefObject<HTMLElement>) =>
     <code ref={codeRef} className={`${styles} text-base leading-relaxed`}>{code}</code>;
 
   return <Lazy
-    component={loadCode}
+    render={renderCode}
     onObserve={highlightCode}
     state={[code, className]} />
 }

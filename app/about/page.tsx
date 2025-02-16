@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { Github, Linkedin, Mail } from "lucide-react"
-import TechStack from "@/components/base/TechStack"
-import ProjectCard from "@/components/base/ProjectCard"
+import TechStack from "@/components/TechStack"
+import ProjectCard from "@/components/ProjectCard"
 
 export default function About() {
   const projects = [
