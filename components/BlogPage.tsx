@@ -8,35 +8,28 @@ import { notFound } from 'next/navigation';
 import Loader from './Loader';
 
 import BlogList, { Post } from './BlogList';
-import BlogContent from './BlogContent';
 import { BlogView } from './BlogView';
-
-import SocialShare from './SocialShare';
-import CommentSection from './CommentSection';
 
 import { fetchData, FetchEndpoints } from '@/endpoints/core';
 import { useBlog } from '@/hooks/useBlog';
+import BlogArticle from './BlogArticle';
 
 interface PostResponse {
     posts: Post[];
 }
 
 const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, session: Session | null, postUrl?: string }) => {
-    const { data, error } = useSWR<PostResponse>(FetchEndpoints.POSTS, fetchData);
+    const endpoint = currentView === BlogView.LIST ?
+        FetchEndpoints.POSTS :
+        [FetchEndpoints.POSTS, postUrl].join('/');
 
+    const { data, error } = useSWR<PostResponse>(endpoint, fetchData);
     const { handleDelete, handleUpload } = useBlog(session);
-
 
     if (error) return <div>Failed to load</div>;
     if (!data || !data.posts) return <Loader />;
 
     const userId = session?.user?.id || '';
-
-    let selectedPost: Post | null = null;
-
-    if (postUrl) {
-        selectedPost = data.posts.find(p => p.url === postUrl) || null;
-    }
 
     switch (currentView) {
         case BlogView.LIST:
@@ -46,13 +39,11 @@ const BlogPage = ({ currentView, session, postUrl }: { currentView: BlogView, se
                 onDelete={handleDelete}
                 userId={userId} />;
         case BlogView.CONTENT:
-            return selectedPost ? (
-                <article className="prose w-[100ch] mx-auto">
-                    <BlogContent post={selectedPost} userId={userId} onDelete={handleDelete} />
-                    <SocialShare url={`${window.location.origin}/blog/${selectedPost.id}`} title={selectedPost.title} />
-                    <CommentSection postId={selectedPost.id} />
-                </article>
-            ) : notFound();
+            return <BlogArticle
+                posts={data.posts}
+                postUrl={postUrl || ''}
+                userId={userId}
+                onDelete={handleDelete} />
         default:
             return notFound();
     };

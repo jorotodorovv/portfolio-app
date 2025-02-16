@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
 
-    return NextResponse.json(post);
+    return NextResponse.json({ posts: [post] });
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {

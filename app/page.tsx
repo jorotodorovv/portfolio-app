@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="prose prose-invert mx-auto">
+    <div className="mx-auto">
       <h1 className="text-4xl font-bold mb-8">Welcome to My Developer Portfolio</h1>
       <p className="mb-4">
         Hi, I&apos;m a software developer passionate about creating amazing web applications.
