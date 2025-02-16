@@ -8,7 +8,7 @@ import { Post } from './BlogList';
 export default function BlogArticle(
     { posts, userId, postUrl, onDelete }:
     { posts: Post[], postUrl: string, userId: string, onDelete: (postId: string, refresh: boolean) => void }) {
-    let selectedPost: Post | undefined = posts.find(p => p.url === postUrl);
+    const selectedPost: Post | undefined = posts.find(p => p.url === postUrl);
 
     if (!selectedPost) return notFound();
 
