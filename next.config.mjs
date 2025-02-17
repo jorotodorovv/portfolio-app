@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
+
+const CURRENT_ENVIRONMENT = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
+
 const nextConfig = {
     images: {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'dd0vjyvor455isbt.public.blob.vercel-storage.com',
+                hostname: process.env.BLOB_STORAGE_URL,
                 port: '',
                 pathname: '/images/**',
                 search: '',
@@ -12,5 +15,11 @@ const nextConfig = {
         ],
     },
 };
+
+if (CURRENT_ENVIRONMENT !== 'development') {
+    nextConfig.env = {
+        PUBLIC_API_URL: process.env.PUBLIC_API_URL.replace("{branch}", process.env.VERCEL_GIT_COMMIT_REF),
+    };
+}
 
 export default nextConfig;
