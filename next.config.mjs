@@ -18,7 +18,7 @@ const nextConfig = {
 
 if (CURRENT_ENVIRONMENT !== 'development') {
     nextConfig.env = {
-        PUBLIC_API_URL: process.env.PUBLIC_API_URL.replace("{branch}", process.env.VERCEL_GIT_COMMIT_REF),
+        PUBLIC_API_URL: process.env.VERCEL_BRANCH_URL,
     };
 }
 
