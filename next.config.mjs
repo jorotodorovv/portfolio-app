@@ -18,7 +18,7 @@ const nextConfig = {
 
 if (CURRENT_ENVIRONMENT !== 'development') {
     nextConfig.env = {
-        PUBLIC_API_URL: process.env.VERCEL_BRANCH_URL,
+        PUBLIC_API_URL: `https://${process.env.VERCEL_BRANCH_URL}`,
     };
 }
 
