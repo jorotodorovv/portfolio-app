@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 const DEFAULT_CONTNET_TYPE = 'application/json';
 
 export enum FetchMethods {
@@ -31,9 +33,7 @@ export async function fetchData<T, TBody>(endpoint: string, options: FetchOption
         contentType = DEFAULT_CONTNET_TYPE,
     } = options;
 
-    const baseUrl = process.env.PUBLIC_API_URL || '';
-
-    let url = `${baseUrl}/api/${endpoint}`;
+    let url = `/api/${endpoint}`;
 
     if (query) {
         url += '/' + query.join('/');

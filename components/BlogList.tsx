@@ -8,8 +8,8 @@ import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 import BlogPost from '@/components/BlogPost'
 import BlogPostUploadModal from '@/components/BlogPostUploadModal'
 
-import { Comment } from './CommentSection'
 import Transition from './Transition'
+import { PostEntity } from '@/server/posts'
 
 const POSTS_PER_PAGE = 10
 
@@ -18,24 +18,8 @@ export interface Tag {
     name: string;
 }
 
-export interface Post {
-    id: string;
-    title: string;
-    url: string;
-    excerpt: string;
-    content: string;
-    date: Date;
-    readTime: number;
-    tags: Tag[];
-    comments: Comment[];
-    user: {
-        id: string;
-        username: string;
-    };
-}
-
 export interface BlogListProps {
-    posts: Post[];
+    posts: PostEntity[];
     onDelete: (postId: string, refresh: boolean) => void;
     onUpload: (
         e: React.FormEvent, 
@@ -60,7 +44,7 @@ export default function BlogList({ posts, onDelete, onUpload, userId }: BlogList
         const matchesSearch = post.title.toLowerCase().includes(search.toLowerCase()) ||
             post.excerpt.toLowerCase().includes(search.toLowerCase())
 
-        const matchesTag = selectedTag ? post.tags.some(t => t.name === selectedTag) : true
+        const matchesTag = selectedTag && post.tags ? post.tags.some(t => t.name === selectedTag) : true
 
         return matchesSearch && matchesTag
     })
@@ -74,7 +58,7 @@ export default function BlogList({ posts, onDelete, onUpload, userId }: BlogList
         )
 
     const allTags: Tag[] = Array.from(
-        new Map(posts.flatMap(post => post.tags.map(tag => [tag.id, tag]))).values()
+        new Map(posts.flatMap(post => post.tags ? post.tags.map(tag => [tag.id, tag]) : [])).values()
     );
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -128,7 +112,7 @@ export default function BlogList({ posts, onDelete, onUpload, userId }: BlogList
                 <Transition key={post.url} id={post.id}>
                     <div key={post.url} className="relative group">
                         <BlogPost {...post} />
-                        {post.user.id === userId && (
+                        {post.user && post.user.id === userId && (
                             <button
                                 onClick={() => onDelete(post.id, false)}
                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 

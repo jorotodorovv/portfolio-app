@@ -5,36 +5,16 @@ import { notFound } from 'next/navigation';
 
 import Loader from './Loader';
 
-import BlogList, { Post } from './BlogList';
+import BlogList from './BlogList';
 import { BlogView } from './BlogView';
 
 import { useBlog } from '@/hooks/useBlog';
 import BlogArticle from './BlogArticle';
-import { useCallback, useEffect, useState } from 'react';
-import { fetchData, FetchEndpoints } from '@/endpoints/core';
-
-interface PostResponse {
-    posts: Post[];
-}
+import { PostEntity } from '@/server/posts';
 
 const BlogPage = ({ currentView, initialPosts, session, postUrl }:
-    { currentView: BlogView, initialPosts: Post[], session: Session | null, postUrl?: string }) => {
-    const [posts, setPosts] = useState<Post[]>(initialPosts);
-
-    const refreshPosts = useCallback(async () => {
-        try {
-            const response: PostResponse = await fetchData(FetchEndpoints.POSTS);
-            setPosts(response.posts);
-        } catch (error) {
-            console.error("Error refreshing posts:", error);
-        }
-    }, []);
-
-    useEffect(() => {
-        setPosts(initialPosts);
-    }, [initialPosts]);
-
-    const { handleDelete, handleUpload } = useBlog(session, refreshPosts);
+    { currentView: BlogView, initialPosts: PostEntity[], session: Session | null, postUrl?: string }) => {
+    const { handleDelete, handleUpload, posts } = useBlog(initialPosts, session);
 
     if (!initialPosts) return <Loader />;
 
