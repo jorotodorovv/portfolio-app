@@ -47,10 +47,6 @@ export async function fetchData<T, TBody>(endpoint: string, options: FetchOption
         ...(body ? { body: JSON.stringify(body) } : {}),
     };
 
-    if (process.env.NODE_ENV !== 'development') {
-        url += `?x-vercel-protection-bypass=${process.env.VERCEL_AUTOMATION_BYPASS_SECRET}`;
-    }
-
     try {
         const response = await fetch(url, fetchOptions);
 
