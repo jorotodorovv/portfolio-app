@@ -51,7 +51,7 @@ export async function fetchData<T, TBody>(endpoint: string, options: FetchOption
         const response = await fetch(url, fetchOptions);
 
         if (!response.ok) {
-            throw new Error(`Failed to ${method.toLowerCase()} data from ${endpoint}`);
+            throw new Error(response.statusText);
         }
 
         const result = await response.json();
