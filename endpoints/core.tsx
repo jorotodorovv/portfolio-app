@@ -1,5 +1,3 @@
-import { getVercelOidcToken } from '@vercel/functions/oidc';
-
 const DEFAULT_CONTNET_TYPE = 'application/json';
 
 export enum FetchMethods {
@@ -44,7 +42,6 @@ export async function fetchData<T, TBody>(endpoint: string, options: FetchOption
     const fetchOptions: RequestInit = {
         method,
         headers: {
-            Authorization: process.env.NODE_ENV !== 'development' ? `Bearer ${await getVercelOidcToken()}` : '',
             'Content-Type': contentType,
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
