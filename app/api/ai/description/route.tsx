@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
     try {
         // Call the AI service to get tags
-        const result = await generateOutput(content, ModelType.SUMMARY);
+        const result: Array<{ summary_text: string }> = await generateOutput(content, ModelType.SUMMARY);
         const description = result[0]?.summary_text || 'No summary available';
 
         return NextResponse.json({ description });

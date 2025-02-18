@@ -2,7 +2,7 @@ import { generateOutput, ModelType } from '@/lib/ai';
 import { NextResponse } from 'next/server';
 
 interface Keyword {
-    word: string; // Adjust the type based on your actual data structure
+    word: string;
 }
 
 export async function POST(request: Request) {
@@ -13,7 +13,6 @@ export async function POST(request: Request) {
     }
 
     try {
-        // Call the AI service to get tags
         const result : Keyword[] = await generateOutput(content, ModelType.KEYWORD);
         const tags = result.map(t => t.word);
         

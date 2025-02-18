@@ -1,7 +1,7 @@
 import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
-import { generateDescription, generateTags } from '@/client/generate';
+import { generateDescription, generateTags } from '@/client/ai';
 import { PostEntity, PostRequestData } from '@/server/posts';
 import { createPost, deletePost } from '@/client/posts';
 import { useReducer } from 'react';
