@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
-import { Post } from './BlogList'
+import { PostEntity } from '@/server/posts'
 
-export default function BlogPost({ title, url, excerpt, date, readTime, tags, user }: Post) {
+export default function BlogPost({ title, url, excerpt, date, readTime, tags, user }: PostEntity) {
   return (
     <article className="bg-gray-800 p-6 rounded-lg shadow-md mb-8">
       <Link href={`/blog/${url}`}>
@@ -14,14 +14,14 @@ export default function BlogPost({ title, url, excerpt, date, readTime, tags, us
         <span>{readTime} min read</span>
       </div>
       <div className="mt-4">
-        {tags.map((tag) => (
+        {tags?.map((tag) => (
           <span key={tag.id} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
             {tag.name}
           </span>
         ))}
       </div>
       <div className="flex justify-between items-center mt-2 text-gray-500 italic">
-        <span>By: {user.username}</span>
+        <span>By: {user?.username}</span>
       </div>
     </article>
   )

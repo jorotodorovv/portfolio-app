@@ -3,11 +3,11 @@
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
-import { Post } from './BlogList';
 import Markdown from './base/Markdown';
+import { PostEntity } from '@/server/posts';
 
 interface BlogContentProps {
-  post: Post;
+  post: PostEntity;
   userId: string;
   onDelete: (postId: string, refresh: boolean) => void;
 }
@@ -22,13 +22,13 @@ const BlogContent = ({ post, userId, onDelete }: BlogContentProps) => {
       </div>
       <Markdown content={post.content} />
       <div className="mt-8">
-        {post.tags.map((tag) => (
+        {post.tags?.map((tag) => (
           <span key={tag.id} className="inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-200 mr-2 mb-2">
             {tag.name}
           </span>
         ))}
       </div>
-      {post.user.id === userId && (
+      {post.user && post.user.id === userId && (
         <button onClick={() => onDelete(post.id, true)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
           Delete Post
         </button>

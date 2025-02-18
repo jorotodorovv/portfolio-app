@@ -3,12 +3,12 @@ import { notFound } from 'next/navigation';
 import BlogContent from './BlogContent';
 import SocialShare from './SocialShare';
 import CommentSection from './CommentSection';
-import { Post } from './BlogList';
+import { PostEntity } from '@/server/posts';
 
 export default function BlogArticle(
     { posts, userId, postUrl, onDelete }:
-    { posts: Post[], postUrl: string, userId: string, onDelete: (postId: string, refresh: boolean) => void }) {
-    const selectedPost: Post | undefined = posts.find(p => p.url === postUrl);
+    { posts: PostEntity[], postUrl: string, userId: string, onDelete: (postId: string, refresh: boolean) => void }) {
+    const selectedPost: PostEntity | undefined = posts.find(p => p.url === postUrl);
 
     if (!selectedPost) return notFound();
 
