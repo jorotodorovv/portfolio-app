@@ -1,7 +1,7 @@
 import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
-import { generateDescriptionWithAI, generateTagsWithAI } from '@/client/generate';
+import { generateDescription, generateTags } from '@/client/generate';
 import { PostEntity, PostRequestData } from '@/server/posts';
 import { createPost, deletePost } from '@/client/posts';
 import { useReducer } from 'react';
@@ -73,8 +73,8 @@ export const useBlog = (initialPosts: PostEntity[], session: Session | null) => 
                 reader.onload = async (event) => {
                     const content = event.target?.result as string
 
-                    const description = await generateDescriptionWithAI(content);
-                    const tags = await generateTagsWithAI(content);
+                    const description = await generateDescription(content);
+                    const tags = await generateTags(content);
 
                     const url = title
                         .toLowerCase()

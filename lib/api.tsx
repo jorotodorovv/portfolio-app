@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 const DEFAULT_CONTNET_TYPE = 'application/json';
 
 export enum FetchMethods {
@@ -24,7 +22,7 @@ export enum FetchEndpoints {
     GENERATE = 'generate',
 }
 
-export async function fetchData<T, TBody>(endpoint: string, options: FetchOptions<TBody> = {}): Promise<T> {
+export async function request<T, TBody>(endpoint: string, options: FetchOptions<TBody> = {}): Promise<T> {
     const {
         query,
         body,

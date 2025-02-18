@@ -1,11 +1,13 @@
-import { fetchData, FetchMethods } from "./core";
+import { FetchEndpoints, FetchMethods, request } from "@/lib/api";
 
-export const generateTagsWithAI = async (content: string): Promise<string[]> => {
+export const generateTags = async (content: string): Promise<string[]> => {
     try {
-        const data: { tags: string[] } = await fetchData('generate/tags', {
+        const endpoint = [FetchEndpoints.GENERATE, 'tags'].join('/');
+
+        const data: { tags: string[] } = await request(endpoint, {
             method: FetchMethods.POST,
             body: { content },
-        });
+        });       
         return data.tags;
     } catch (error) {
         console.error('Failed to generate tags with AI', error);
@@ -13,9 +15,11 @@ export const generateTagsWithAI = async (content: string): Promise<string[]> => 
     }
 }
 
-export const generateDescriptionWithAI = async (content: string): Promise<string> => {
+export const generateDescription = async (content: string): Promise<string> => {
     try {
-        const data: { description: string } = await fetchData('generate/description', {
+        const endpoint = [FetchEndpoints.GENERATE, 'description'].join('/');
+
+        const data: { description: string } = await request(endpoint, {
             method: FetchMethods.POST,
             body: { content },
         });
