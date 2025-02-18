@@ -55,8 +55,11 @@ export async function request<T, TBody>(endpoint: string, options: FetchOptions<
         const result = await response.json();
 
         return result as T;
-    } catch (error: any) {
-        throw error;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred');
     } finally {
         if (callback) callback();
     }

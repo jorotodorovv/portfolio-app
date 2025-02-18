@@ -8,7 +8,7 @@ export interface PostRequestData {
     url: string;
     description: string;
     tags: string[];
-    userId: string | undefined;
+    userId: string;
 }
 
 export interface PostEntity {
