@@ -1,33 +1,34 @@
 import { FetchEndpoints, FetchMethods, request } from "@/lib/api";
 
-export const generateTags = async (content: string): Promise<string[]> => {
+type KeywordResponse = { word: string }[];
+type SummaryResponse = { summary_text: string }[];
+
+type ModelType = 'keyword' | 'summary';
+
+export async function generate(content: string, type: ModelType): Promise<string[] | string | undefined> {
     try {
-        const endpoint = [FetchEndpoints.AI, 'tags'].join('/');
-
-        const data: { tags: string[] } = await request(endpoint, {
+        const result: KeywordResponse | SummaryResponse = await request(FetchEndpoints.AI, {
+            baseUrl: process.env.NEXT_PUBLIC_AI_API_URL,
             method: FetchMethods.POST,
-            body: { content },
-        });       
-
-        return data.tags;
-    } catch (error) {
-        console.error('Failed to generate tags with AI', error);
-        return [];
-    }
-}
-
-export const generateDescription = async (content: string): Promise<string> => {
-    try {
-        const endpoint = [FetchEndpoints.AI, 'description'].join('/');
-
-        const data: { description: string } = await request(endpoint, {
-            method: FetchMethods.POST,
-            body: { content },
+            body: { content, modelType: type },
+            headers: {
+                'Accept': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'omit',
         });
 
-        return data.description;
+        return type === 'keyword'
+            ? (result as KeywordResponse)?.map(t => t.word)
+            : (result as SummaryResponse)[0]?.summary_text;
     } catch (error) {
-        console.error('Failed to generate description with AI', error);
-        return "";
+        console.error(`Failed to generate ${type} with AI`, error);
+        return type === 'keyword' ? [] : "";
     }
 }
+
+export const generateTags = (content: string) =>
+    generate(content, 'keyword') as Promise<string[]>;
+
+export const generateDescription = (content: string) =>
+    generate(content, 'summary') as Promise<string>;

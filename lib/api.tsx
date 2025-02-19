@@ -15,6 +15,8 @@ interface FetchOptions<TBody> {
     query?: string[];
     contentType?: string;
     baseUrl?: string;
+    mode?: 'cors' | 'same-origin';
+    credentials?: RequestCredentials;
     headers?: Record<string, string>;
 }
 
@@ -36,13 +38,15 @@ export async function request<T, TBody>(endpoint: string, options: FetchOptions<
         query,
         body,
         callback,
+        credentials,
         method = FetchMethods.GET,
         contentType = DEFAULT_CONTNET_TYPE,
         baseUrl = '',
         headers = {},
+        mode = 'same-origin',
     } = options;
 
-    let url = baseUrl ? `${baseUrl}/${endpoint}` : `/api/${endpoint}`;
+    let url = baseUrl ? `${baseUrl}/api/${endpoint}` : `/api/${endpoint}`;
 
     if (query) {
         url += '/' + query.join('/');
@@ -54,6 +58,8 @@ export async function request<T, TBody>(endpoint: string, options: FetchOptions<
             'Content-Type': contentType,
             ...headers,
         },
+        mode,
+        credentials,
         ...(body ? { body: JSON.stringify(body) } : {}),
     };
 
